@@ -9,9 +9,16 @@
 #import <Foundation/Foundation.h>
 @import WebRTC;
 
+typedef void (^VideoRecordingSessionCompletionBlock)(void);
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VideoRecordingSession : NSObject <RTCVideoRenderer>
+
+@property (nonatomic, readonly) NSError *error;
+@property (nonatomic, nullable, readonly) NSURL *outputURL;
+@property (nonatomic, nullable, copy) VideoRecordingSessionCompletionBlock completion;
+- (void)startRecording;
+- (void)stopRecording;
 
 @end
 

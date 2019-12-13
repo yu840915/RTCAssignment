@@ -11,6 +11,7 @@
 		E035CBAC23A377D20023ADC4 /* CGImageToCVImageBufferConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = E035CBAB23A377D20023ADC4 /* CGImageToCVImageBufferConverter.m */; };
 		E0394DBF23A3944800E779E3 /* AVSampleBufferDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = E0394DBE23A3944800E779E3 /* AVSampleBufferDisplayView.m */; };
 		E049C2A723A3D46000DFC320 /* VideoRecordingSession.m in Sources */ = {isa = PBXBuildFile; fileRef = E049C2A623A3D46000DFC320 /* VideoRecordingSession.m */; };
+		E049C2AA23A3EB9B00DFC320 /* MovieFileURLGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = E049C2A923A3EB9B00DFC320 /* MovieFileURLGenerator.m */; };
 		E068063523A3432400524F39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E068063423A3432400524F39 /* Assets.xcassets */; };
 		E068063823A3432400524F39 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E068063623A3432400524F39 /* LaunchScreen.storyboard */; };
 		E068063B23A3432400524F39 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E068063A23A3432400524F39 /* main.m */; };
@@ -91,6 +92,8 @@
 		E0394DBE23A3944800E779E3 /* AVSampleBufferDisplayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AVSampleBufferDisplayView.m; sourceTree = "<group>"; };
 		E049C2A523A3D46000DFC320 /* VideoRecordingSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoRecordingSession.h; sourceTree = "<group>"; };
 		E049C2A623A3D46000DFC320 /* VideoRecordingSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoRecordingSession.m; sourceTree = "<group>"; };
+		E049C2A823A3EB9B00DFC320 /* MovieFileURLGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MovieFileURLGenerator.h; sourceTree = "<group>"; };
+		E049C2A923A3EB9B00DFC320 /* MovieFileURLGenerator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MovieFileURLGenerator.m; sourceTree = "<group>"; };
 		E068062523A3431E00524F39 /* AppRTCMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppRTCMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E068063223A3431E00524F39 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E068063423A3432400524F39 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -242,6 +245,8 @@
 				E068065723A343AD00524F39 /* ARDAppClient.m */,
 				E049C2A523A3D46000DFC320 /* VideoRecordingSession.h */,
 				E049C2A623A3D46000DFC320 /* VideoRecordingSession.m */,
+				E049C2A823A3EB9B00DFC320 /* MovieFileURLGenerator.h */,
+				E049C2A923A3EB9B00DFC320 /* MovieFileURLGenerator.m */,
 				E068067023A343AF00524F39 /* ARDAppClient+Internal.h */,
 				E068067923A343B000524F39 /* ARDAppEngineClient.h */,
 				E068066223A343AE00524F39 /* ARDAppEngineClient.m */,
@@ -655,6 +660,7 @@
 				E06806C023A343B200524F39 /* RTCIceCandidate+JSON.m in Sources */,
 				E06806C123A343B200524F39 /* ARDMessageResponse.m in Sources */,
 				E06806E923A343B200524F39 /* ARDMainView.m in Sources */,
+				E049C2AA23A3EB9B00DFC320 /* MovieFileURLGenerator.m in Sources */,
 				E06806D723A343B200524F39 /* UIImage+ARDUtilities.m in Sources */,
 				E06806C523A343B200524F39 /* ARDSettingsModel.m in Sources */,
 				E068063B23A3432400524F39 /* main.m in Sources */,

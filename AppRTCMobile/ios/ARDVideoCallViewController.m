@@ -31,6 +31,7 @@
 @property(nonatomic, strong) RTCVideoTrack *remoteVideoTrack;
 @property(nonatomic, readonly) ARDVideoCallView *videoCallView;
 @property(nonatomic, assign) AVAudioSessionPortOverride portOverride;
+@property(nonatomic) VideoRecordingSession *recordingSession;
 @end
 
 @implementation ARDVideoCallViewController {
@@ -68,6 +69,11 @@
 
   RTCAudioSession *session = [RTCAudioSession sharedInstance];
   [session addDelegate:self];
+}
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
@@ -200,13 +206,33 @@
   if (_remoteVideoTrack == remoteVideoTrack) {
     return;
   }
+  [self stopRecording];
   [_remoteVideoTrack removeRenderer:_videoCallView.remoteVideoView];
   _remoteVideoTrack = nil;
   [_videoCallView.remoteVideoView renderFrame:nil];
   _remoteVideoTrack = remoteVideoTrack;
   [_remoteVideoTrack addRenderer:_videoCallView.remoteVideoView];
+}
+
+- (void)startRecording {
+  if (self.recordingSession) { return; }
   VideoRecordingSession *session = [[VideoRecordingSession alloc] init];
+  __weak ARDVideoCallViewController *weakSelf = self;
+  session.completion = ^{
+    ARDVideoCallViewController *strongSelf = weakSelf;
+    [strongSelf handleRecordComplete];
+  };
   [_remoteVideoTrack addRenderer:session];
+}
+
+- (void)handleRecordComplete {
+  self.recordingSession = nil;
+}
+
+- (void)stopRecording {
+  if (!self.recordingSession) { return; }
+  [self.recordingSession stopRecording];
+  [_remoteVideoTrack removeRenderer:self.recordingSession];
 }
 
 - (void)hangup {
