@@ -9,11 +9,14 @@
  */
 
 #import <WebRTC/RTCCameraVideoCapturer.h>
+@import AVFoundation;
 
 @class ARDSettingsModel;
 
 // Controls the camera. Handles starting the capture, switching cameras etc.
 @interface ARDCaptureController : NSObject
+
+@property(nonatomic, weak) NSObject<AVCaptureVideoDataOutputSampleBufferDelegate> *displayDelegate;
 
 - (instancetype)initWithCapturer:(RTCCameraVideoCapturer *)capturer
                         settings:(ARDSettingsModel *)settings;

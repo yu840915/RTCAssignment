@@ -152,6 +152,14 @@ static NSString *const loopbackLaunchProcessArgument = @"loopback";
 #pragma mark - ARDVideoCallViewControllerDelegate
 
 - (void)viewControllerDidFinish:(ARDVideoCallViewController *)viewController {
+  __weak ARDMainViewController *weakSelf = self;
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    ARDMainViewController *strongSelf = weakSelf;
+    [strongSelf dismissViewControllerIfNeeded:viewController];
+  }];
+}
+
+- (void)dismissViewControllerIfNeeded:(ARDVideoCallViewController *)viewController {
   if (![viewController isBeingDismissed]) {
     RTCLog(@"Dismissing VC");
     [self dismissViewControllerAnimated:YES completion:^{

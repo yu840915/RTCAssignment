@@ -32,12 +32,13 @@
 
 @end
 
+@class AVSampleBufferDisplayView;
 // Video call view that shows local and remote video, provides a label to
 // display status, and also a hangup button.
 @interface ARDVideoCallView : UIView
 
 @property(nonatomic, readonly) UILabel *statusLabel;
-@property(nonatomic, readonly) RTCCameraPreviewView *localVideoView;
+@property(nonatomic, readonly) AVSampleBufferDisplayView *localVideoView;
 @property(nonatomic, readonly) __kindof UIView<RTCVideoRenderer> *remoteVideoView;
 @property(nonatomic, readonly) ARDStatsView *statsView;
 @property(nonatomic, weak) id<ARDVideoCallViewDelegate> delegate;
