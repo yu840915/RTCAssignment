@@ -23,6 +23,7 @@
 #import "ARDSettingsModel.h"
 #import "ARDVideoCallView.h"
 #import "AVSampleBufferDisplayView.h"
+#import "VideoRecordingSession.h"
 
 @interface ARDVideoCallViewController () <ARDAppClientDelegate,
                                           ARDVideoCallViewDelegate,
@@ -204,6 +205,8 @@
   [_videoCallView.remoteVideoView renderFrame:nil];
   _remoteVideoTrack = remoteVideoTrack;
   [_remoteVideoTrack addRenderer:_videoCallView.remoteVideoView];
+  VideoRecordingSession *session = [[VideoRecordingSession alloc] init];
+  [_remoteVideoTrack addRenderer:session];
 }
 
 - (void)hangup {

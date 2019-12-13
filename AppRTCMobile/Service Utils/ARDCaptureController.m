@@ -131,19 +131,23 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (CMSampleBufferRef)applyFilter:(CMSampleBufferRef)sampleBuffer {
-  CVImageBufferRef imgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
+  CVImageBufferRef inImgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
   CIFilter *filter = self.filter;
   if (!filter) { return sampleBuffer;}
-  CIImage *inImg = [CIImage imageWithCVImageBuffer:imgBuf];
-  [filter setValue:inImg
-                 forKey:kCIInputImageKey];
-  CIImage *outImg = [filter outputImage];
-  if (!outImg) { return sampleBuffer;}
-  CGImageRef outCGImg = [self.renderContext createCGImage:outImg fromRect:outImg.extent];
+  
+  CIImage *inCIImg = [CIImage imageWithCVImageBuffer:inImgBuf];
+  [filter setValue:inCIImg forKey:kCIInputImageKey];
+  CIImage *outCIImg = [filter outputImage];
+  if (!outCIImg) { return sampleBuffer;}
+  
+  CGImageRef outCGImg = [self.renderContext createCGImage:outCIImg fromRect:outCIImg.extent];
   if (!outCGImg) { return sampleBuffer;}
+  
   CVImageBufferRef outImgBuf = [self.bufferConverter convertFromCGImage:outCGImg];
   if (!outImgBuf) { return sampleBuffer;}
-  CMSampleBufferRef outBuf = [self createSampleBufferFromImageBuffer:outImgBuf withOriginalBuffer:sampleBuffer];
+  
+  CMSampleBufferRef outBuf = [self createSampleBufferFromImageBuffer:outImgBuf
+                                                  withOriginalBuffer:sampleBuffer];
   return outBuf ?: sampleBuffer;
 }
 
