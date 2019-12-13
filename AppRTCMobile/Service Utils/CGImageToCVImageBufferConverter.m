@@ -43,7 +43,8 @@
 - (CVImageBufferRef)createImageBufferForImage:(CGImageRef) cgImage  {
   CVImageBufferRef outBuf;
   NSDictionary *attr = @{(__bridge NSString *)kCVPixelBufferCGImageCompatibilityKey: @(NO),
-                       (__bridge NSString *)kCVPixelBufferCGBitmapContextCompatibilityKey: @(NO)};
+                       (__bridge NSString *)kCVPixelBufferCGBitmapContextCompatibilityKey: @(NO),
+                         (id)kCVPixelBufferIOSurfacePropertiesKey: @{}};
   OSStatus result = CVPixelBufferCreate(kCFAllocatorDefault, CGImageGetWidth(cgImage), CGImageGetHeight(cgImage), kCVPixelFormatType_32ARGB, (__bridge CFDictionaryRef _Nullable)(attr), &outBuf);
   if (result != kCVReturnSuccess) {
     return nil;

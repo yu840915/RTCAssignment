@@ -9,7 +9,6 @@
  */
 
 #import "ARDCaptureController.h"
-@import AVFoundation;
 @import CoreImage;
 
 #import <WebRTC/RTCLogging.h>
@@ -123,9 +122,12 @@ const Float64 kFramerateLimit = 30.0;
 
 #pragma - AVCaptureVideoDataOutputSampleBufferDelegate
 
-- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+- (void)captureOutput:(AVCaptureOutput *)output
+didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
+       fromConnection:(AVCaptureConnection *)connection {
   CMSampleBufferRef buf = [self applyFilter:sampleBuffer];
   [_capturer captureOutput:output didOutputSampleBuffer:buf fromConnection:connection];
+  [self.displayDelegate captureOutput:output didOutputSampleBuffer:buf fromConnection:connection];
 }
 
 - (CMSampleBufferRef)applyFilter:(CMSampleBufferRef)sampleBuffer {
@@ -145,7 +147,8 @@ const Float64 kFramerateLimit = 30.0;
   return outBuf ?: sampleBuffer;
 }
 
-- (CMSampleBufferRef)createSampleBufferFromImageBuffer:(CVImageBufferRef)imgBuf withOriginalBuffer:(CMSampleBufferRef)sampleBuffer {
+- (CMSampleBufferRef)createSampleBufferFromImageBuffer:(CVImageBufferRef)imgBuf
+                                    withOriginalBuffer:(CMSampleBufferRef)sampleBuffer {
   CMVideoFormatDescriptionRef format;
   if (CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imgBuf, &format) != noErr) {
     return nil;
@@ -161,7 +164,8 @@ const Float64 kFramerateLimit = 30.0;
   return outBuf;
 }
 
-- (void)captureOutput:(AVCaptureOutput *)output didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+- (void)captureOutput:(AVCaptureOutput *)output
+  didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
   if ([_capturer respondsToSelector:@selector(captureOutput:didDropSampleBuffer:fromConnection:)]) {
     [_capturer captureOutput:output didDropSampleBuffer:sampleBuffer fromConnection:connection];
   }

@@ -9,6 +9,7 @@
  */
 
 #import "ARDVideoCallViewController.h"
+@import AVFoundation;
 
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraVideoCapturer.h>
@@ -21,10 +22,11 @@
 #import "ARDFileCaptureController.h"
 #import "ARDSettingsModel.h"
 #import "ARDVideoCallView.h"
+#import "AVSampleBufferDisplayView.h"
 
 @interface ARDVideoCallViewController () <ARDAppClientDelegate,
                                           ARDVideoCallViewDelegate,
-                                          RTCAudioSessionDelegate>
+                                          RTCAudioSessionDelegate, AVCaptureVideoDataOutputSampleBufferDelegate>
 @property(nonatomic, strong) RTCVideoTrack *remoteVideoTrack;
 @property(nonatomic, readonly) ARDVideoCallView *videoCallView;
 @property(nonatomic, assign) AVAudioSessionPortOverride portOverride;
@@ -102,10 +104,10 @@
 
 - (void)appClient:(ARDAppClient *)client
     didCreateLocalCapturer:(RTCCameraVideoCapturer *)localCapturer {
-  _videoCallView.localVideoView.captureSession = localCapturer.captureSession;
   ARDSettingsModel *settingsModel = [[ARDSettingsModel alloc] init];
   _captureController =
       [[ARDCaptureController alloc] initWithCapturer:localCapturer settings:settingsModel];
+  _captureController.displayDelegate = self;
   [_captureController startCapture];
 }
 
@@ -206,7 +208,6 @@
 
 - (void)hangup {
   self.remoteVideoTrack = nil;
-  _videoCallView.localVideoView.captureSession = nil;
   [_captureController stopCapture];
   _captureController = nil;
   [_fileCaptureController stopCapture];
@@ -243,6 +244,14 @@
 
   [alert addAction:defaultAction];
   [self presentViewController:alert animated:YES completion:nil];
+}
+
+- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+  __weak ARDVideoCallViewController *weakSelf = self;
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    ARDVideoCallViewController *strongSelf = weakSelf;
+    [strongSelf.videoCallView.localVideoView enqueueBuffer:sampleBuffer];
+  }];
 }
 
 @end

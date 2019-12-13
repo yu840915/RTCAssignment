@@ -152,8 +152,10 @@ static NSString *const loopbackLaunchProcessArgument = @"loopback";
 #pragma mark - ARDVideoCallViewControllerDelegate
 
 - (void)viewControllerDidFinish:(ARDVideoCallViewController *)viewController {
+  __weak ARDMainViewController *weakSelf = self;
   [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-    [self dismissViewControllerIfNeeded:viewController];
+    ARDMainViewController *strongSelf = weakSelf;
+    [strongSelf dismissViewControllerIfNeeded:viewController];
   }];
 }
 

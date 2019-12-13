@@ -18,6 +18,7 @@
 #endif
 
 #import "UIImage+ARDUtilities.h"
+#import "AVSampleBufferDisplayView.h"
 
 static CGFloat const kButtonPadding = 16;
 static CGFloat const kButtonSize = 48;
@@ -53,8 +54,7 @@ static CGFloat const kStatusBarHeight = 20;
 #endif
 
     [self addSubview:_remoteVideoView];
-
-    _localVideoView = [[RTCCameraPreviewView alloc] initWithFrame:CGRectZero];
+    _localVideoView = [[AVSampleBufferDisplayView alloc] initWithFrame:CGRectZero];
     [self addSubview:_localVideoView];
 
     _statsView = [[ARDStatsView alloc] initWithFrame:CGRectZero];

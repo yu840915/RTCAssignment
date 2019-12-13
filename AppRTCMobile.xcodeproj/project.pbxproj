@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		548F699D031D52627853EB37 /* libPods-AppRTCMobileTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BA27B442C72AFDD2AA9E303 /* libPods-AppRTCMobileTests.a */; };
 		E035CBAC23A377D20023ADC4 /* CGImageToCVImageBufferConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = E035CBAB23A377D20023ADC4 /* CGImageToCVImageBufferConverter.m */; };
+		E0394DBF23A3944800E779E3 /* AVSampleBufferDisplayView.m in Sources */ = {isa = PBXBuildFile; fileRef = E0394DBE23A3944800E779E3 /* AVSampleBufferDisplayView.m */; };
 		E068063523A3432400524F39 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E068063423A3432400524F39 /* Assets.xcassets */; };
 		E068063823A3432400524F39 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E068063623A3432400524F39 /* LaunchScreen.storyboard */; };
 		E068063B23A3432400524F39 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E068063A23A3432400524F39 /* main.m */; };
@@ -85,6 +86,8 @@
 		D04DB0C9CB51E4F01C64E3FE /* libPods-AppRTCMobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AppRTCMobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E035CBAA23A377D20023ADC4 /* CGImageToCVImageBufferConverter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CGImageToCVImageBufferConverter.h; sourceTree = "<group>"; };
 		E035CBAB23A377D20023ADC4 /* CGImageToCVImageBufferConverter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CGImageToCVImageBufferConverter.m; sourceTree = "<group>"; };
+		E0394DBD23A3944800E779E3 /* AVSampleBufferDisplayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AVSampleBufferDisplayView.h; sourceTree = "<group>"; };
+		E0394DBE23A3944800E779E3 /* AVSampleBufferDisplayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AVSampleBufferDisplayView.m; sourceTree = "<group>"; };
 		E068062523A3431E00524F39 /* AppRTCMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AppRTCMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E068063223A3431E00524F39 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E068063423A3432400524F39 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -363,6 +366,8 @@
 				E068069D23A343B100524F39 /* ARDStatsView.m */,
 				E068069A23A343B100524F39 /* ARDVideoCallView.h */,
 				E06806A423A343B100524F39 /* ARDVideoCallView.m */,
+				E0394DBD23A3944800E779E3 /* AVSampleBufferDisplayView.h */,
+				E0394DBE23A3944800E779E3 /* AVSampleBufferDisplayView.m */,
 				E06806A623A343B100524F39 /* Info.plist */,
 				E068069E23A343B100524F39 /* UIImage+ARDUtilities.h */,
 				E068068223A343B100524F39 /* UIImage+ARDUtilities.m */,
@@ -621,6 +626,7 @@
 				E06806F623A343B200524F39 /* RTCVideoCodecInfo+HumanReadable.m in Sources */,
 				E06806C723A343B200524F39 /* ARDAppEngineClient.m in Sources */,
 				E06806F723A343B200524F39 /* ARDTURNClient.m in Sources */,
+				E0394DBF23A3944800E779E3 /* AVSampleBufferDisplayView.m in Sources */,
 				E06806F523A343B200524F39 /* ARDBroadcastSetupViewController.m in Sources */,
 				E06806D023A343B200524F39 /* ARDBitrateTracker.m in Sources */,
 				E06806FC23A343B200524F39 /* ARDJoinResponse.m in Sources */,
