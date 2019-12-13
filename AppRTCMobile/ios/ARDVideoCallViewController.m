@@ -51,6 +51,7 @@
 
     _client = [[ARDAppClient alloc] initWithDelegate:self];
     [_client connectToRoomWithId:room settings:settingsModel isLoopback:isLoopback];
+    self.modalPresentationStyle = UIModalPresentationFullScreen;
   }
   return self;
 }

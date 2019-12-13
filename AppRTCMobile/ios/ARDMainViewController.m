@@ -198,6 +198,7 @@ static NSString *const loopbackLaunchProcessArgument = @"loopback";
 }
 
 - (void)presentViewControllerAsModal:(UIViewController *)viewController {
+  viewController.modalPresentationStyle = UIModalPresentationFullScreen;
   [self presentViewController:viewController animated:YES completion:nil];
 }
 

@@ -40,6 +40,7 @@ typedef NS_ENUM(int, ARDAudioSettingsOptions) {
   self = [super initWithStyle:style];
   if (self) {
     _settingsModel = settingsModel;
+    self.modalPresentationStyle = UIModalPresentationFullScreen;
   }
   return self;
 }
