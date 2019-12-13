@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AVSampleBufferDisplayView : UIView
 
 - (void)enqueueBuffer:(CMSampleBufferRef)buffer;
+- (void)updateRotation;
 
 @end
 

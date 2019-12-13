@@ -173,6 +173,7 @@ static CGFloat const kStatusBarHeight = 20;
   [_statusLabel sizeToFit];
   _statusLabel.center =
       CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
+  [_localVideoView updateRotation];
 }
 
 #pragma mark - RTCVideoViewDelegate
