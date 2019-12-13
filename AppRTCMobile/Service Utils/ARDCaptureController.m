@@ -9,14 +9,27 @@
  */
 
 #import "ARDCaptureController.h"
+@import AVFoundation;
+@import CoreImage;
 
 #import <WebRTC/RTCLogging.h>
 
 #import "ARDSettingsModel.h"
+#import "CGImageToCVImageBufferConverter.h"
+
 
 const Float64 kFramerateLimit = 30.0;
 
-@implementation ARDCaptureController {
+@interface ARDCaptureController () <AVCaptureVideoDataOutputSampleBufferDelegate>
+@property CIFilter *filter;
+@property CIContext *renderContext;
+@property CGImageToCVImageBufferConverter *bufferConverter;
+@end
+
+@interface RTCCameraVideoCapturer () <AVCaptureVideoDataOutputSampleBufferDelegate>
+@end
+
+@implementation ARDCaptureController  {
   RTCCameraVideoCapturer *_capturer;
   ARDSettingsModel *_settings;
   BOOL _usingFrontCamera;
@@ -28,6 +41,11 @@ const Float64 kFramerateLimit = 30.0;
     _capturer = capturer;
     _settings = settings;
     _usingFrontCamera = YES;
+    _filter = [CIFilter filterWithName:@"CIColorInvert"];
+    _renderContext = [CIContext contextWithEAGLContext:[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2]];
+    _bufferConverter = [[CGImageToCVImageBufferConverter alloc] init];
+    AVCaptureVideoDataOutput *output = (AVCaptureVideoDataOutput *)capturer.captureSession.outputs.firstObject;
+    [output setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
   }
 
   return self;
@@ -103,4 +121,51 @@ const Float64 kFramerateLimit = 30.0;
   return fmin(maxSupportedFramerate, kFramerateLimit);
 }
 
+#pragma - AVCaptureVideoDataOutputSampleBufferDelegate
+
+- (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+  CMSampleBufferRef buf = [self applyFilter:sampleBuffer];
+  [_capturer captureOutput:output didOutputSampleBuffer:buf fromConnection:connection];
+}
+
+- (CMSampleBufferRef)applyFilter:(CMSampleBufferRef)sampleBuffer {
+  CVImageBufferRef imgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
+  CIFilter *filter = self.filter;
+  if (!filter) { return sampleBuffer;}
+  CIImage *inImg = [CIImage imageWithCVImageBuffer:imgBuf];
+  [filter setValue:inImg
+                 forKey:kCIInputImageKey];
+  CIImage *outImg = [filter outputImage];
+  if (!outImg) { return sampleBuffer;}
+  CGImageRef outCGImg = [self.renderContext createCGImage:outImg fromRect:outImg.extent];
+  if (!outCGImg) { return sampleBuffer;}
+  CVImageBufferRef outImgBuf = [self.bufferConverter convertFromCGImage:outCGImg];
+  if (!outImgBuf) { return sampleBuffer;}
+  CMSampleBufferRef outBuf = [self createSampleBufferFromImageBuffer:outImgBuf withOriginalBuffer:sampleBuffer];
+  return outBuf ?: sampleBuffer;
+}
+
+- (CMSampleBufferRef)createSampleBufferFromImageBuffer:(CVImageBufferRef)imgBuf withOriginalBuffer:(CMSampleBufferRef)sampleBuffer {
+  CMVideoFormatDescriptionRef format;
+  if (CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imgBuf, &format) != noErr) {
+    return nil;
+  }
+  CMSampleTimingInfo timingInfo;
+  if (CMSampleBufferGetSampleTimingInfo(sampleBuffer, 0, &timingInfo) != noErr) {
+    return nil;
+  }
+  CMSampleBufferRef outBuf;
+  if (CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imgBuf, format, &timingInfo, &outBuf) != noErr) {
+    return nil;
+  }
+  return outBuf;
+}
+
+- (void)captureOutput:(AVCaptureOutput *)output didDropSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+  if ([_capturer respondsToSelector:@selector(captureOutput:didDropSampleBuffer:fromConnection:)]) {
+    [_capturer captureOutput:output didDropSampleBuffer:sampleBuffer fromConnection:connection];
+  }
+}
+
 @end
+
