@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSArray<VisualEffectDescriptor *> *effects;
 @property (nonatomic, readonly, nullable) VisualEffectDescriptor *appliedEffect;
-- (void)applyEffectIfAvailable:(VisualEffectDescriptor *)descriptor;
+- (void)applyEffectIfAvailable:(nullable VisualEffectDescriptor *)descriptor;
 
 @end
 

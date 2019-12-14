@@ -12,29 +12,45 @@
 
 @interface VideoVisualEffectManager ()
 
-@property (nonatomic) NSArray<VisualEffect *> *visualEffect;
+@property (nonatomic) NSArray<VisualEffect *> *visualEffects;
 @property (nonatomic) NSDictionary<NSString *, VisualEffect *> *visualEffectMap;
 
 @end
 
 @implementation VideoVisualEffectManager
 
-- (instancetype)init
-{
+- (instancetype)initWithCaptureController:(ARDCaptureController *)capture {
   self = [super init];
   if (self) {
-    _visualEffect = @[[[ColorInvertEffect alloc] init], [[MonoEffect alloc] init]];
+    _captureController = capture;
+    _visualEffects = @[[[ColorInvertEffect alloc] init], [[MonoEffect alloc] init]];
+    NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+    for (VisualEffect *effect in _visualEffects) {
+      dict[effect.descriptor.key] = effect;
+    }
+    _visualEffectMap = [dict copy];
   }
   return self;
 }
 
-
-- (void)setAppliedEffect:(VisualEffectDescriptor *)appliedEffect {
-  
+- (NSArray<VisualEffectDescriptor *> *)effects {
+  NSMutableArray *result = [NSMutableArray array];
+  for (VisualEffect *effect in self.visualEffects) {
+    [result addObject:effect.descriptor];
+  }
+  return [result copy];
 }
 
 - (VisualEffectDescriptor *)appliedEffect {
   return self.captureController.visualEffect.descriptor;
+}
+
+- (void)applyEffectIfAvailable:(nullable VisualEffectDescriptor *)descriptor {
+    if (!descriptor) {
+    self.captureController.visualEffect = nil;
+  } else if (self.visualEffectMap[descriptor.key]) {
+    self.captureController.visualEffect = self.visualEffectMap[descriptor.key];
+  }
 }
 
 @end

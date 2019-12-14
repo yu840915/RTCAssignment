@@ -30,7 +30,7 @@ static CGFloat const kStatusBarHeight = 20;
 @property (nonatomic, weak) UIStackView *extraButtonContainer;
 
 @property (nonatomic, assign) BOOL shouldAddConstraintsForButtonContainer;
-@property (nonatomic, assign) BOOL shouldAddConstraintsForRemoteEffectButton;
+@property (nonatomic, assign) BOOL shouldAddConstraintsForLocalEffectButton;
 @end
 
 @implementation ARDVideoCallView {
@@ -120,9 +120,9 @@ static CGFloat const kStatusBarHeight = 20;
 - (void)prepareExtraButtons {
   UIStackView *container = [[UIStackView alloc] initWithFrame:CGRectZero];
   container.spacing = kButtonPadding;
-  UIButton *effectBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-  [effectBtn setTitle:@"Effects" forState:UIControlStateNormal];
-  [container addArrangedSubview:effectBtn];
+  UIButton *rEffectBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+  [rEffectBtn setTitle:@"Effects" forState:UIControlStateNormal];
+  [container addArrangedSubview:rEffectBtn];
   UIButton *recordBtn = [UIButton buttonWithType:UIButtonTypeSystem];
   recordBtn.titleLabel.numberOfLines = 0;
   recordBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -132,16 +132,16 @@ static CGFloat const kStatusBarHeight = 20;
   [container addArrangedSubview:recordBtn];
   [self addSubview:container];
   
-  _localVisualEffectButton = effectBtn;
+  _remoteVisualEffectButton = rEffectBtn;
   _recordButton = recordBtn;
   _extraButtonContainer = container;
   self.shouldAddConstraintsForButtonContainer = YES;
   
-  UIButton *rEffectBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-  [rEffectBtn setTitle:@"Effects" forState:UIControlStateNormal];
-  [self addSubview:rEffectBtn];
-  _remoteVisualEffectButton = rEffectBtn;
-  self.shouldAddConstraintsForRemoteEffectButton = YES;
+  UIButton *lEffectBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+  [lEffectBtn setTitle:@"Effects" forState:UIControlStateNormal];
+  [self addSubview:lEffectBtn];
+  _localVisualEffectButton  = lEffectBtn;
+  self.shouldAddConstraintsForLocalEffectButton = YES;
   
   [self setNeedsUpdateConstraints];
 }
@@ -159,9 +159,9 @@ static CGFloat const kStatusBarHeight = 20;
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-(leading)-[container]" options:0 metrics:metrics views:views]];
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[container]-(bottom)-|" options:0 metrics:metrics views:views]];
   }
-  if (self.shouldAddConstraintsForRemoteEffectButton) {
-    self.shouldAddConstraintsForRemoteEffectButton = NO;
-    UIView *btn = self.remoteVisualEffectButton;
+  if (self.shouldAddConstraintsForLocalEffectButton) {
+    self.shouldAddConstraintsForLocalEffectButton = NO;
+    UIView *btn = self.localVisualEffectButton;
     btn.translatesAutoresizingMaskIntoConstraints = NO;
     NSDictionary *views = NSDictionaryOfVariableBindings(btn);
     NSNumber *bottom = @(kButtonPadding + kLocalVideoViewSize + kLocalVideoViewPadding);

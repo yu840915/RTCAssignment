@@ -14,9 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class ARDCaptureController;
 @interface VideoVisualEffectManager : NSObject <VideoVisualEffectManaging>
 
-@property (nonatomic) ARDCaptureController *captureController;
+- (instancetype)initWithCaptureController:(ARDCaptureController *)capture;
+@property (nonatomic, readonly) ARDCaptureController *captureController;
 @property (nonatomic, readonly) NSArray<VisualEffectDescriptor *> *effects;
-@property (nonatomic, nullable) VisualEffectDescriptor *appliedEffect;
+@property (nonatomic, readonly, nullable) VisualEffectDescriptor *appliedEffect;
 
 @end
 

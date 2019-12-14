@@ -27,6 +27,7 @@
 #import "VideoRecordingSession.h"
 #import "VisualEffectMessageChannel.h"
 #import "VisualEffect.h"
+#import "VideoVisualEffectManager.h"
 
 @interface ARDVideoCallViewController () <ARDAppClientDelegate,
                                           ARDVideoCallViewDelegate,
@@ -35,6 +36,8 @@
 @property(nonatomic, readonly) ARDVideoCallView *videoCallView;
 @property(nonatomic, assign) AVAudioSessionPortOverride portOverride;
 @property(nonatomic) VideoRecordingSession *recordingSession;
+@property(nonatomic) id<VideoVisualEffectManaging> remoteVisualEffectManager;
+@property(nonatomic) VideoVisualEffectManager *localVisualEffectManager;
 @end
 
 @implementation ARDVideoCallViewController {
@@ -138,11 +141,27 @@
 }
 
 - (void)showVisualEffectOptionsForLocalVideo:(id)sender {
-  [_client.messageClient sendMessage:[[VisualEffectMessage alloc] initWithCommand:@"test"]];
+  [self showVisualEffectOptionsForManager:self.localVisualEffectManager];
 }
 
 - (void)showVisualEffectOptionsForRemoteVideo:(id)sender {
-  
+  if (self.remoteVisualEffectManager) {
+    [self showVisualEffectOptionsForManager:self.remoteVisualEffectManager];
+  }
+}
+
+- (void)showVisualEffectOptionsForManager:(id<VideoVisualEffectManaging>)manager {
+  UIAlertController *sheet = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+  [sheet addAction:[UIAlertAction actionWithTitle:@"Original" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    [manager applyEffectIfAvailable:nil];
+  }]];
+  for (VisualEffectDescriptor *descriptor in manager.effects) {
+      [sheet addAction:[UIAlertAction actionWithTitle:descriptor.defaultDisplayName style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+      [manager applyEffectIfAvailable:descriptor];
+    }]];
+  }
+  [sheet addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+  [self presentViewController:sheet animated:true completion:nil];
 }
 
 #pragma mark - ARDAppClientDelegate
@@ -179,7 +198,8 @@
   ARDSettingsModel *settingsModel = [[ARDSettingsModel alloc] init];
   _captureController =
       [[ARDCaptureController alloc] initWithCapturer:localCapturer settings:settingsModel];
-  _captureController.visualEffect = [[MonoEffect alloc] init];
+  VideoVisualEffectManager *manager = [[VideoVisualEffectManager alloc] initWithCaptureController:_captureController];
+  _localVisualEffectManager = manager;
   _captureController.displayDelegate = self;
   [_captureController startCapture];
 }
