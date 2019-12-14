@@ -32,7 +32,11 @@
 }
 
 - (void)dataChannel:(nonnull RTCDataChannel *)dataChannel didReceiveMessageWithBuffer:(nonnull RTCDataBuffer *)buffer {
-  NSLog(@"[Message] %@", buffer);
+  VisualEffectMessage *message = [VisualEffectMessage messageWithDataBuffer:buffer];
+  if (message) {
+    NSLog(@"[Message] %@", message.command);
+    [self.delegate messageChannel:self didReceiveMessage:message];
+  }
 }
 
 - (void)dataChannelDidChangeState:(nonnull RTCDataChannel *)dataChannel {

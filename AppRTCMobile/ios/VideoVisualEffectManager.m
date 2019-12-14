@@ -22,19 +22,25 @@
 
 @implementation VideoVisualEffectManager
 
-- (instancetype)initWithCaptureController:(ARDCaptureController *)capture {
+- (instancetype)initWithCaptureController:(ARDCaptureController *)capture
+                                  channel:(VisualEffectMessageChannel *)channel; {
   self = [super init];
   if (self) {
     _captureController = capture;
+    _channel = channel;
     _visualEffects = @[[[ColorInvertEffect alloc] init], [[MonoEffect alloc] init]];
     NSMutableDictionary *dict = [NSMutableDictionary dictionary];
     for (VisualEffect *effect in _visualEffects) {
       dict[effect.descriptor.key] = effect;
     }
     _visualEffectMap = [dict copy];
-    
+    [channel addDelegate:self];
   }
   return self;
+}
+
+- (void)dealloc{
+  [_channel removeDelegate:self];
 }
 
 - (NSArray<VisualEffectDescriptor *> *)effects {
@@ -52,14 +58,31 @@
 - (void)applyEffectIfAvailable:(nullable VisualEffectDescriptor *)descriptor {
     if (!descriptor) {
     self.captureController.visualEffect = nil;
+    [self notifyCurrentVisualEffect];
   } else if (self.visualEffectMap[descriptor.key]) {
     self.captureController.visualEffect = self.visualEffectMap[descriptor.key];
+    [self notifyCurrentVisualEffect];
   }
 }
 
 - (void)messageChannel:(VisualEffectMessageChannel *)channel didReceiveMessage:(VisualEffectMessage *)message {
-  //handle query
-  //handle set query
+  if (![message isKindOfClass:[UpstreamMessage class]]) { return; }
+  if ([message isKindOfClass:[SetEffectMessage class]]) {
+    SetEffectMessage *req = (SetEffectMessage *)message;
+    [self applyEffectIfAvailable:req.effect];
+  } else if ([message.command isEqualToString:kGetEffectRequest]) {
+    [self notifyCurrentVisualEffect];
+  } else if ([message.command isEqualToString:kGetEffectListRequest]) {
+    [self notifyVisualEffects];
+  }
+}
+
+- (void)notifyCurrentVisualEffect {
+  [self.channel sendMessage:[[AppliedEffectMessage alloc] initWithEffect:self.appliedEffect]];
+}
+
+- (void)notifyVisualEffects {
+  [self.channel sendMessage:[[EffectListMessage alloc] initWithEffects:self.effects]];
 }
 
 @end

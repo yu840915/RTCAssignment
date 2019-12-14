@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VisualEffectMessageChannel : NSObject
 
+- (void)addDelegate:(id<VisualEffectMessageChannelDelegate>)delegate;
+- (void)removeDelegate:(id<VisualEffectMessageChannelDelegate>)delegate;
 @property (nonatomic, weak) id<VisualEffectMessageChannelDelegate> delegate;
 - (void)sendMessage:(VisualEffectMessage *)message;
 

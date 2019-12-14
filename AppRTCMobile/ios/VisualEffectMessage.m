@@ -125,6 +125,7 @@ NSString * const kEffectListResponse = @"res.get.effects";
 }
 
 - (NSDictionary *)jsonObject {
+  if (!self.effect) {return [super jsonObject];}
   NSMutableDictionary *result = [[super jsonObject] mutableCopy];
   result[kEffectKey] = [self.effect toJSONObject];
   return [result copy];
@@ -164,6 +165,7 @@ NSString * const kEffectListResponse = @"res.get.effects";
 }
 
 - (NSDictionary *)jsonObject {
+  if (!self.effect) {return [super jsonObject];}
   NSMutableDictionary *result = [[super jsonObject] mutableCopy];
   result[kEffectKey] = [self.effect toJSONObject];
   return [result copy];
