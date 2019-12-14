@@ -30,4 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSString *defaultDisplayName;
 @end
 
+@interface VisualEffectDescriptor (JSONSerialization)
++ (nullable instancetype)descriptorWithJSONObject:(NSDictionary *)json;
+- (NSDictionary *)toJSONObject;
+@end
+
 NS_ASSUME_NONNULL_END

@@ -9,9 +9,12 @@
 #import "VideoVisualEffectManager.h"
 #import "VisualEffect.h"
 #import "ARDCaptureController.h"
+#import "VisualEffectMessageChannel.h"
 
-@interface VideoVisualEffectManager ()
+@interface VideoVisualEffectManager () <VisualEffectMessageChannelDelegate>
 
+@property (nonatomic) VisualEffectMessageChannel *channel;
+@property (nonatomic) ARDCaptureController *captureController;
 @property (nonatomic) NSArray<VisualEffect *> *visualEffects;
 @property (nonatomic) NSDictionary<NSString *, VisualEffect *> *visualEffectMap;
 
@@ -29,6 +32,7 @@
       dict[effect.descriptor.key] = effect;
     }
     _visualEffectMap = [dict copy];
+    
   }
   return self;
 }
@@ -51,6 +55,11 @@
   } else if (self.visualEffectMap[descriptor.key]) {
     self.captureController.visualEffect = self.visualEffectMap[descriptor.key];
   }
+}
+
+- (void)messageChannel:(VisualEffectMessageChannel *)channel didReceiveMessage:(VisualEffectMessage *)message {
+  //handle query
+  //handle set query
 }
 
 @end

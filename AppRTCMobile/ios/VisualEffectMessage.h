@@ -8,14 +8,44 @@
 
 #import <Foundation/Foundation.h>
 
-@class RTCDataBuffer;
+extern NSString * const kGetEffectRequest;
+extern NSString * const kGetEffectListRequest;
+extern NSString * const kSetEffectRequest;
+extern NSString * const kEffectResponse;
+extern NSString * const kEffectListResponse;
+
+@class RTCDataBuffer, VisualEffectDescriptor;
 @interface VisualEffectMessage : NSObject
 
++ (instancetype)messageWithDataBuffer:(RTCDataBuffer *)buffer;
 - (instancetype)initWithCommand:(NSString *)command;
-- (instancetype)initWithDataBuffer:(RTCDataBuffer *)buffer;
 
 @property (nonatomic, copy) NSString *command;
 
 - (RTCDataBuffer *)toDataBuffer;
 
+@end
+
+@interface UpstreamMessage : VisualEffectMessage
+@end
+
+@interface SetEffectMessage : UpstreamMessage
+- (instancetype)initWithEffect:(VisualEffectDescriptor *)effect;
+
+@property (nonatomic, readonly) VisualEffectDescriptor *effect;
+@end
+
+@interface DownstreamMessage : VisualEffectMessage
+@end
+
+@interface AppliedEffectMessage : DownstreamMessage
+- (instancetype)initWithEffect:(VisualEffectDescriptor *)effect;
+
+@property (nonatomic, readonly) VisualEffectDescriptor *effect;
+@end
+
+@interface EffectListMessage : DownstreamMessage
+- (instancetype)initWithEffects:(NSArray<VisualEffectDescriptor *> *)effects;
+
+@property (nonatomic, readonly) NSArray<VisualEffectDescriptor *> *effects;
 @end

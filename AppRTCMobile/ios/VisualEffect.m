@@ -71,3 +71,19 @@
 }
 
 @end
+
+@implementation VisualEffectDescriptor (JSONSerialization)
+
++ (instancetype)descriptorWithJSONObject:(NSDictionary *)json {
+  NSString *key = [json[@"key"] copy];
+  NSString *defaultDisplayName = [json[@"name"] copy];
+  if (!key || !defaultDisplayName) {
+    return nil;
+  }
+  return [[VisualEffectDescriptor alloc] initWithKey:key displayName:defaultDisplayName];
+}
+
+- (NSDictionary *)toJSONObject {
+  return @{@"key": self.key, @"name": self.defaultDisplayName};
+}
+@end
