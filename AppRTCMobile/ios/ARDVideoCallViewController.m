@@ -28,6 +28,7 @@
 #import "VisualEffectMessageChannel.h"
 #import "VisualEffect.h"
 #import "VideoVisualEffectManager.h"
+#import "RemoteVideoVisualEffectManagerProxy.h"
 
 @interface ARDVideoCallViewController () <ARDAppClientDelegate,
                                           ARDVideoCallViewDelegate,
@@ -198,7 +199,7 @@
   ARDSettingsModel *settingsModel = [[ARDSettingsModel alloc] init];
   _captureController =
       [[ARDCaptureController alloc] initWithCapturer:localCapturer settings:settingsModel];
-  VideoVisualEffectManager *manager = [[VideoVisualEffectManager alloc] initWithCaptureController:_captureController];
+  VideoVisualEffectManager *manager = [[VideoVisualEffectManager alloc] initWithCaptureController:_captureController channel:client.messageChannel];
   _localVisualEffectManager = manager;
   _captureController.displayDelegate = self;
   [_captureController startCapture];
@@ -221,6 +222,7 @@
 - (void)appClient:(ARDAppClient *)client
     didReceiveRemoteVideoTrack:(RTCVideoTrack *)remoteVideoTrack {
   self.remoteVideoTrack = remoteVideoTrack;
+  self.remoteVisualEffectManager = [[RemoteVideoVisualEffectManagerProxy alloc] initWithChannel:client.messageChannel];
   __weak ARDVideoCallViewController *weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     ARDVideoCallViewController *strongSelf = weakSelf;

@@ -46,8 +46,8 @@ NSString * const kEffectListResponse = @"res.get.effects";
     kGetEffectRequest: [UpstreamMessage class],
     kGetEffectListRequest: [UpstreamMessage class],
     kSetEffectRequest: [SetEffectMessage class],
-    kEffectResponse: [kEffectResponse class],
-    kEffectListResponse: [kEffectListResponse class]
+    kEffectResponse: [AppliedEffectMessage class],
+    kEffectListResponse: [EffectListMessage class]
   };
   if (!map[cmd]) {return nil;}
   return [(VisualEffectMessage *)[map[cmd] alloc] initWithJSONObject:json];
@@ -93,6 +93,13 @@ NSString * const kEffectListResponse = @"res.get.effects";
 @end
 
 @implementation UpstreamMessage
++ (instancetype)getEffectMessage {
+  return [[UpstreamMessage alloc] initWithCommand:kGetEffectRequest];
+}
+
++ (instancetype)getEffectListMessage {
+  return [[UpstreamMessage alloc] initWithCommand:kGetEffectListRequest];
+}
 @end
 
 @implementation SetEffectMessage

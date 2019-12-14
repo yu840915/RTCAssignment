@@ -27,6 +27,8 @@ extern NSString * const kEffectListResponse;
 @end
 
 @interface UpstreamMessage : VisualEffectMessage
++ (instancetype)getEffectMessage;
++ (instancetype)getEffectListMessage;
 @end
 
 @interface SetEffectMessage : UpstreamMessage

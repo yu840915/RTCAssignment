@@ -66,6 +66,7 @@
 		E06806F923A343B200524F39 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = E06806B523A343B100524F39 /* LICENSE */; };
 		E06806FB23A343B200524F39 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E06806BB23A343B200524F39 /* Main.storyboard */; };
 		E06806FC23A343B200524F39 /* ARDJoinResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = E06806BE23A343B200524F39 /* ARDJoinResponse.m */; };
+		E0750A2E23A542E200A69FE4 /* RemoteVideoVisualEffectManagerProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = E0750A2D23A542E200A69FE4 /* RemoteVideoVisualEffectManagerProxy.m */; };
 		E08BB25923A4D0FD00A2109B /* VisualEffectMessageChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB25823A4D0FD00A2109B /* VisualEffectMessageChannel.m */; };
 		E08BB25C23A4D61E00A2109B /* VisualEffectMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB25B23A4D61E00A2109B /* VisualEffectMessage.m */; };
 		E08BB26023A4E62200A2109B /* VideoVisualEffectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB25F23A4E62200A2109B /* VideoVisualEffectManager.m */; };
@@ -200,6 +201,8 @@
 		E06806BC23A343B200524F39 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Main.storyboard; sourceTree = "<group>"; };
 		E06806BD23A343B200524F39 /* ARDSettingsModel+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ARDSettingsModel+Private.h"; sourceTree = "<group>"; };
 		E06806BE23A343B200524F39 /* ARDJoinResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARDJoinResponse.m; sourceTree = "<group>"; };
+		E0750A2C23A542E200A69FE4 /* RemoteVideoVisualEffectManagerProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RemoteVideoVisualEffectManagerProxy.h; sourceTree = "<group>"; };
+		E0750A2D23A542E200A69FE4 /* RemoteVideoVisualEffectManagerProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RemoteVideoVisualEffectManagerProxy.m; sourceTree = "<group>"; };
 		E08BB25723A4D0FD00A2109B /* VisualEffectMessageChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VisualEffectMessageChannel.h; sourceTree = "<group>"; };
 		E08BB25823A4D0FD00A2109B /* VisualEffectMessageChannel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VisualEffectMessageChannel.m; sourceTree = "<group>"; };
 		E08BB25A23A4D61E00A2109B /* VisualEffectMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VisualEffectMessage.h; sourceTree = "<group>"; };
@@ -382,6 +385,8 @@
 				E08BB25D23A4E51B00A2109B /* VideoVisualEffectManaging.h */,
 				E08BB25E23A4E62200A2109B /* VideoVisualEffectManager.h */,
 				E08BB25F23A4E62200A2109B /* VideoVisualEffectManager.m */,
+				E0750A2C23A542E200A69FE4 /* RemoteVideoVisualEffectManagerProxy.h */,
+				E0750A2D23A542E200A69FE4 /* RemoteVideoVisualEffectManagerProxy.m */,
 				E08BB26123A4E6AE00A2109B /* VisualEffect.h */,
 				E08BB26223A4E6AE00A2109B /* VisualEffect.m */,
 				E08BB25723A4D0FD00A2109B /* VisualEffectMessageChannel.h */,
@@ -686,6 +691,7 @@
 				E06806C123A343B200524F39 /* ARDMessageResponse.m in Sources */,
 				E06806E923A343B200524F39 /* ARDMainView.m in Sources */,
 				E08BB26323A4E6AE00A2109B /* VisualEffect.m in Sources */,
+				E0750A2E23A542E200A69FE4 /* RemoteVideoVisualEffectManagerProxy.m in Sources */,
 				E049C2AA23A3EB9B00DFC320 /* MovieFileURLGenerator.m in Sources */,
 				E06806D723A343B200524F39 /* UIImage+ARDUtilities.m in Sources */,
 				E06806C523A343B200524F39 /* ARDSettingsModel.m in Sources */,

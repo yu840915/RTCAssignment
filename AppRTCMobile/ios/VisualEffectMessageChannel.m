@@ -9,14 +9,53 @@
 #import "VisualEffectMessageChannel.h"
 @import WebRTC;
 
+@interface ChannelDelegateHolder : NSObject
+- (instancetype)initWithDelegate:(id<VisualEffectMessageChannelDelegate>)delegate;
+@property (nonatomic, weak) id<VisualEffectMessageChannelDelegate> delegate;
+@end;
+
 @interface VisualEffectMessageChannel () <RTCDataChannelDelegate>
 
 @property (nonatomic) RTCDataChannel *inChannel;
 @property (nonatomic) RTCDataChannel *outChannel;
+@property (nonatomic) NSArray<ChannelDelegateHolder *> *delegateHolders;
 
 @end
 
 @implementation VisualEffectMessageChannel
+
+- (instancetype)init
+{
+  self = [super init];
+  if (self) {
+    _delegateHolders = [NSArray array];
+  }
+  return self;
+}
+
+- (void)addDelegate:(id<VisualEffectMessageChannelDelegate>)delegate {
+  NSMutableArray *list = [NSMutableArray array];
+  for (ChannelDelegateHolder *holder in self.delegateHolders) {
+    if (holder.delegate == delegate) {
+      return;
+    }
+    if (!holder.delegate) {continue;}
+    [list addObject:holder];
+  }
+  [list addObject:[[ChannelDelegateHolder alloc] initWithDelegate:delegate]];
+  _delegateHolders = [list copy];
+}
+
+- (void)removeDelegate:(id<VisualEffectMessageChannelDelegate>)delegate {
+  NSMutableArray *list = [NSMutableArray array];
+  for (ChannelDelegateHolder *holder in self.delegateHolders) {
+    if (!holder.delegate || holder.delegate == delegate) {
+      continue;
+    }
+    [list addObject:holder];
+  }
+  _delegateHolders = [list copy];
+}
 
 - (void)setInChannel:(RTCDataChannel *)inChannel {
   _inChannel.delegate = nil;
@@ -35,12 +74,26 @@
   VisualEffectMessage *message = [VisualEffectMessage messageWithDataBuffer:buffer];
   if (message) {
     NSLog(@"[Message] %@", message.command);
-    [self.delegate messageChannel:self didReceiveMessage:message];
+    for (ChannelDelegateHolder *holder in self.delegateHolders) {
+      [holder.delegate messageChannel:self didReceiveMessage:message];
+    }
   }
 }
 
 - (void)dataChannelDidChangeState:(nonnull RTCDataChannel *)dataChannel {
   NSLog(@"%@, %@", dataChannel, @(dataChannel.readyState));
+}
+
+@end
+
+@implementation ChannelDelegateHolder
+
+- (instancetype)initWithDelegate:(id<VisualEffectMessageChannelDelegate>)delegate {
+  self = [super init];
+  if (self) {
+    _delegate = delegate;
+  }
+  return self;
 }
 
 @end

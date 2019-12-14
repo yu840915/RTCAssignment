@@ -68,7 +68,7 @@ typedef NS_ENUM(NSInteger, ARDAppClientState) {
 @property(nonatomic, readonly) ARDAppClientState state;
 @property(nonatomic, weak) id<ARDAppClientDelegate> delegate;
 @property(nonatomic, assign, getter=isBroadcast) BOOL broadcast;
-@property(nonatomic, readonly) VisualEffectMessageChannel *messageClient;
+@property(nonatomic, readonly) VisualEffectMessageChannel *messageChannel;
 
 // Convenience constructor since all expected use cases will need a delegate
 // in order to receive remote tracks.

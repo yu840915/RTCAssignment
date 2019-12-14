@@ -452,7 +452,7 @@ static int const kKbpsMultiplier = 1000;
 
 - (void)peerConnection:(RTCPeerConnection *)peerConnection
     didOpenDataChannel:(RTCDataChannel *)dataChannel {
-  self.messageClient.inChannel = dataChannel;
+  self.messageChannel.inChannel = dataChannel;
 }
 
 #pragma mark - RTCSessionDescriptionDelegate
@@ -564,7 +564,7 @@ static int const kKbpsMultiplier = 1000;
   config.sdpSemantics = RTCSdpSemanticsUnifiedPlan;
   config.certificate = pcert;
   
-  _messageClient = [[VisualEffectMessageChannel alloc] init];
+  _messageChannel = [[VisualEffectMessageChannel alloc] init];
   _peerConnection = [_factory peerConnectionWithConfiguration:config
                                                   constraints:constraints
                                                      delegate:self];
@@ -610,7 +610,7 @@ static int const kKbpsMultiplier = 1000;
 - (void)prepareOutgoingMessageChannel:(RTCPeerConnection *)peerConnection {
   RTCDataChannelConfiguration *config = [[RTCDataChannelConfiguration alloc] init];
   RTCDataChannel *channel = [peerConnection dataChannelForLabel:@"message" configuration:config];
-  _messageClient.outChannel = channel;
+  _messageChannel.outChannel = channel;
 }
 
 // Processes the messages that we've received from the room server and the

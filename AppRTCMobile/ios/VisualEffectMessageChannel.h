@@ -22,7 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addDelegate:(id<VisualEffectMessageChannelDelegate>)delegate;
 - (void)removeDelegate:(id<VisualEffectMessageChannelDelegate>)delegate;
-@property (nonatomic, weak) id<VisualEffectMessageChannelDelegate> delegate;
 - (void)sendMessage:(VisualEffectMessage *)message;
 
 @end
