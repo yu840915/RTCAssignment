@@ -101,6 +101,14 @@
   [self.videoCallView.recordButton setSelected:self.recordingSession];
 }
 
+- (void)updateViewsForVisualEffectStates {
+  NSString *lEffect = self.localVisualEffectManager.appliedEffect.defaultDisplayName ?: @"Effect";
+  [self.videoCallView.localVisualEffectButton setTitle:lEffect forState:UIControlStateNormal];
+
+  NSString *rEffect = self.remoteVisualEffectManager.appliedEffect.defaultDisplayName ?: @"Effect";
+  [self.videoCallView.remoteVisualEffectButton setTitle:rEffect forState:UIControlStateNormal];
+}
+
 #pragma mark - Action
 
 - (void)toggleRecordingIfAllowed:(id)sender {
@@ -201,6 +209,12 @@
       [[ARDCaptureController alloc] initWithCapturer:localCapturer settings:settingsModel];
   VideoVisualEffectManager *manager = [[VideoVisualEffectManager alloc] initWithCaptureController:_captureController channel:client.messageChannel];
   _localVisualEffectManager = manager;
+  __weak ARDVideoCallViewController *weakSelf = self;
+  manager.updateBlock = ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      [weakSelf updateViewsForVisualEffectStates];
+    }];
+  };
   _captureController.displayDelegate = self;
   [_captureController startCapture];
 }
@@ -222,8 +236,14 @@
 - (void)appClient:(ARDAppClient *)client
     didReceiveRemoteVideoTrack:(RTCVideoTrack *)remoteVideoTrack {
   self.remoteVideoTrack = remoteVideoTrack;
-  self.remoteVisualEffectManager = [[RemoteVideoVisualEffectManagerProxy alloc] initWithChannel:client.messageChannel];
+  RemoteVideoVisualEffectManagerProxy *manager = [[RemoteVideoVisualEffectManagerProxy alloc] initWithChannel:client.messageChannel];
   __weak ARDVideoCallViewController *weakSelf = self;
+  manager.updateBlock = ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      [weakSelf updateViewsForVisualEffectStates];
+    }];
+  };
+  self.remoteVisualEffectManager = manager;
   dispatch_async(dispatch_get_main_queue(), ^{
     ARDVideoCallViewController *strongSelf = weakSelf;
     strongSelf.videoCallView.statusLabel.hidden = YES;

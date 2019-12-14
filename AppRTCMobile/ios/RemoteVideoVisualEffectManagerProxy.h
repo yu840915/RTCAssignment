@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RemoteVideoVisualEffectManagerProxy : NSObject <VideoVisualEffectManaging>
 
 - (instancetype)initWithChannel:(VisualEffectMessageChannel *)channel;
+@property (nonatomic, copy) VideoVisualEffectUpdateBlock updateBlock;
 @property (nonatomic, readonly) NSArray<VisualEffectDescriptor *> *effects;
 @property (nonatomic, readonly, nullable) VisualEffectDescriptor *appliedEffect;
 - (void)syncState;

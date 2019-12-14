@@ -57,6 +57,12 @@
   _delegateHolders = [list copy];
 }
 
+- (void)setOutChannel:(RTCDataChannel *)outChannel {
+  _outChannel.delegate = nil;
+  _outChannel = outChannel;
+  outChannel.delegate = self;
+}
+
 - (void)setInChannel:(RTCDataChannel *)inChannel {
   _inChannel.delegate = nil;
   _inChannel = inChannel;
@@ -81,7 +87,19 @@
 }
 
 - (void)dataChannelDidChangeState:(nonnull RTCDataChannel *)dataChannel {
-  NSLog(@"%@, %@", dataChannel, @(dataChannel.readyState));
+  NSLog(@"[Message] data channel update state: %@", dataChannel);
+  if (self.isReady) {
+    for (ChannelDelegateHolder *holder in self.delegateHolders) {
+      if ([holder.delegate respondsToSelector:@selector(messageChannelBecomeReady:)]) {
+        [holder.delegate messageChannelBecomeReady:self];
+      }
+    }
+
+  }
+}
+
+- (BOOL)isReady {
+  return self.inChannel.readyState == RTCDataChannelStateOpen && self.outChannel.readyState == RTCDataChannelStateOpen;
 }
 
 @end

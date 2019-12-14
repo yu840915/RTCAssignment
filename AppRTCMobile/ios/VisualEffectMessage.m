@@ -112,7 +112,7 @@ NSString * const kEffectListResponse = @"res.get.effects";
     } else {
       NSDictionary *dict = json[kEffectKey];
       if ([dict isKindOfClass:[NSDictionary class]]) {
-        _effect = [VisualEffectDescriptor descriptorWithJSONObject:json];
+        _effect = [VisualEffectDescriptor descriptorWithJSONObject:dict];
       }
       if (!_effect) {
         self = nil;
@@ -152,7 +152,7 @@ NSString * const kEffectListResponse = @"res.get.effects";
     } else {
       NSDictionary *dict = json[kEffectKey];
       if ([dict isKindOfClass:[NSDictionary class]]) {
-        _effect = [VisualEffectDescriptor descriptorWithJSONObject:json];
+        _effect = [VisualEffectDescriptor descriptorWithJSONObject:dict];
       }
       if (!_effect) {
         self = nil;
@@ -215,4 +215,14 @@ NSString * const kEffectListResponse = @"res.get.effects";
   return self;
 }
 
+- (NSDictionary *)jsonObject {
+  NSMutableDictionary *result = [[super jsonObject] mutableCopy];
+  NSMutableArray *list = [NSMutableArray array];
+  for (VisualEffectDescriptor *des in self.effects) {
+    [list addObject:[des toJSONObject]];
+  }
+  result[kEffectListKey] = list;
+  return [result copy];
+
+}
 @end

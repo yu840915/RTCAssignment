@@ -22,7 +22,9 @@
   if (self) {
     _channel = channel;
     [channel addDelegate:self];
-    [self syncState];
+    if (channel.isReady) {
+      [self syncState];
+    }
   }
   return self;
 }
@@ -41,12 +43,22 @@
   if ([message isKindOfClass:[AppliedEffectMessage class]]) {
     AppliedEffectMessage *res = (AppliedEffectMessage *)message;
     _appliedEffect = res.effect;
-    //notify
+    [self notifyUpdateIfNeeded];
   } else if ([message isKindOfClass:[EffectListMessage class]]) {
     EffectListMessage *res = (EffectListMessage *)message;
     _effects = res.effects;
-    //notify
+    [self notifyUpdateIfNeeded];
   }
+}
+
+- (void)notifyUpdateIfNeeded {
+  if (self.updateBlock) {
+    self.updateBlock();
+  }
+}
+
+- (void)messageChannelBecomeReady:(VisualEffectMessageChannel *)channel {
+  [self syncState];
 }
 
 - (void)applyEffectIfAvailable:(nullable VisualEffectDescriptor *)descriptor {

@@ -13,9 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @import Foundation;
 
+typedef void(^VideoVisualEffectUpdateBlock)(void);
 @class VisualEffectDescriptor;
 @protocol VideoVisualEffectManaging <NSObject>
 
+@property (nonatomic, copy) VideoVisualEffectUpdateBlock updateBlock;
 @property (nonatomic, readonly) NSArray<VisualEffectDescriptor *> *effects;
 @property (nonatomic, readonly, nullable) VisualEffectDescriptor *appliedEffect;
 - (void)applyEffectIfAvailable:(nullable VisualEffectDescriptor *)descriptor;

@@ -56,16 +56,19 @@
 }
 
 - (void)applyEffectIfAvailable:(nullable VisualEffectDescriptor *)descriptor {
-    if (!descriptor) {
+  if (!descriptor) {
     self.captureController.visualEffect = nil;
     [self notifyCurrentVisualEffect];
+    [self notifyUpdateIfNeeded];
   } else if (self.visualEffectMap[descriptor.key]) {
     self.captureController.visualEffect = self.visualEffectMap[descriptor.key];
     [self notifyCurrentVisualEffect];
+    [self notifyUpdateIfNeeded];
   }
 }
 
-- (void)messageChannel:(VisualEffectMessageChannel *)channel didReceiveMessage:(VisualEffectMessage *)message {
+- (void)messageChannel:(VisualEffectMessageChannel *)channel
+     didReceiveMessage:(VisualEffectMessage *)message {
   if (![message isKindOfClass:[UpstreamMessage class]]) { return; }
   if ([message isKindOfClass:[SetEffectMessage class]]) {
     SetEffectMessage *req = (SetEffectMessage *)message;
@@ -74,6 +77,12 @@
     [self notifyCurrentVisualEffect];
   } else if ([message.command isEqualToString:kGetEffectListRequest]) {
     [self notifyVisualEffects];
+  }
+}
+
+- (void)notifyUpdateIfNeeded {
+  if (self.updateBlock) {
+    self.updateBlock();
   }
 }
 

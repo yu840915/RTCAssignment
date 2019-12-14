@@ -15,11 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol VisualEffectMessageChannelDelegate <NSObject>
 
 - (void)messageChannel:(VisualEffectMessageChannel *)channel didReceiveMessage:(VisualEffectMessage *)message;
+@optional
+- (void)messageChannelBecomeReady:(VisualEffectMessageChannel *)channel;
 
 @end
 
 @interface VisualEffectMessageChannel : NSObject
 
+@property (nonatomic, assign) BOOL isReady;
 - (void)addDelegate:(id<VisualEffectMessageChannelDelegate>)delegate;
 - (void)removeDelegate:(id<VisualEffectMessageChannelDelegate>)delegate;
 - (void)sendMessage:(VisualEffectMessage *)message;
