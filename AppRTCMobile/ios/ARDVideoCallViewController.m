@@ -26,6 +26,7 @@
 #import "AVSampleBufferDisplayView.h"
 #import "VideoRecordingSession.h"
 #import "P2PMessageClient.h"
+#import "VisualEffect.h"
 
 @interface ARDVideoCallViewController () <ARDAppClientDelegate,
                                           ARDVideoCallViewDelegate,
@@ -178,6 +179,7 @@
   ARDSettingsModel *settingsModel = [[ARDSettingsModel alloc] init];
   _captureController =
       [[ARDCaptureController alloc] initWithCapturer:localCapturer settings:settingsModel];
+  _captureController.visualEffect = [[MonoEffect alloc] init];
   _captureController.displayDelegate = self;
   [_captureController startCapture];
 }
@@ -341,10 +343,12 @@
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+  CFRetain(sampleBuffer);
   __weak ARDVideoCallViewController *weakSelf = self;
   [[NSOperationQueue mainQueue] addOperationWithBlock:^{
     ARDVideoCallViewController *strongSelf = weakSelf;
     [strongSelf.videoCallView.localVideoView enqueueBuffer:sampleBuffer];
+    CFRelease(sampleBuffer);
   }];
 }
 

@@ -68,6 +68,8 @@
 		E06806FC23A343B200524F39 /* ARDJoinResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = E06806BE23A343B200524F39 /* ARDJoinResponse.m */; };
 		E08BB25923A4D0FD00A2109B /* P2PMessageClient.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB25823A4D0FD00A2109B /* P2PMessageClient.m */; };
 		E08BB25C23A4D61E00A2109B /* P2PMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB25B23A4D61E00A2109B /* P2PMessage.m */; };
+		E08BB26023A4E62200A2109B /* LocalVideoVisualEffectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB25F23A4E62200A2109B /* LocalVideoVisualEffectManager.m */; };
+		E08BB26323A4E6AE00A2109B /* VisualEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB26223A4E6AE00A2109B /* VisualEffect.m */; };
 		E23FCAFB6D307619DEB79BFE /* libPods-AppRTCMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D04DB0C9CB51E4F01C64E3FE /* libPods-AppRTCMobile.a */; };
 /* End PBXBuildFile section */
 
@@ -202,6 +204,11 @@
 		E08BB25823A4D0FD00A2109B /* P2PMessageClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = P2PMessageClient.m; sourceTree = "<group>"; };
 		E08BB25A23A4D61E00A2109B /* P2PMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = P2PMessage.h; sourceTree = "<group>"; };
 		E08BB25B23A4D61E00A2109B /* P2PMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = P2PMessage.m; sourceTree = "<group>"; };
+		E08BB25D23A4E51B00A2109B /* VideoVisualEffectAccessing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoVisualEffectAccessing.h; sourceTree = "<group>"; };
+		E08BB25E23A4E62200A2109B /* LocalVideoVisualEffectManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LocalVideoVisualEffectManager.h; sourceTree = "<group>"; };
+		E08BB25F23A4E62200A2109B /* LocalVideoVisualEffectManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LocalVideoVisualEffectManager.m; sourceTree = "<group>"; };
+		E08BB26123A4E6AE00A2109B /* VisualEffect.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VisualEffect.h; sourceTree = "<group>"; };
+		E08BB26223A4E6AE00A2109B /* VisualEffect.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VisualEffect.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -372,6 +379,11 @@
 				E06806A123A343B100524F39 /* ARDMainViewController.m */,
 				E06806A223A343B100524F39 /* ARDVideoCallViewController.h */,
 				E068069C23A343B100524F39 /* ARDVideoCallViewController.m */,
+				E08BB25D23A4E51B00A2109B /* VideoVisualEffectAccessing.h */,
+				E08BB25E23A4E62200A2109B /* LocalVideoVisualEffectManager.h */,
+				E08BB25F23A4E62200A2109B /* LocalVideoVisualEffectManager.m */,
+				E08BB26123A4E6AE00A2109B /* VisualEffect.h */,
+				E08BB26223A4E6AE00A2109B /* VisualEffect.m */,
 				E08BB25723A4D0FD00A2109B /* P2PMessageClient.h */,
 				E08BB25823A4D0FD00A2109B /* P2PMessageClient.m */,
 				E08BB25A23A4D61E00A2109B /* P2PMessage.h */,
@@ -669,9 +681,11 @@
 				E06806C823A343B200524F39 /* ARDUtilities.m in Sources */,
 				E06806ED23A343B200524F39 /* ARDFileCaptureController.m in Sources */,
 				E06806F023A343B200524F39 /* ARDVideoCallView.m in Sources */,
+				E08BB26023A4E62200A2109B /* LocalVideoVisualEffectManager.m in Sources */,
 				E06806C023A343B200524F39 /* RTCIceCandidate+JSON.m in Sources */,
 				E06806C123A343B200524F39 /* ARDMessageResponse.m in Sources */,
 				E06806E923A343B200524F39 /* ARDMainView.m in Sources */,
+				E08BB26323A4E6AE00A2109B /* VisualEffect.m in Sources */,
 				E049C2AA23A3EB9B00DFC320 /* MovieFileURLGenerator.m in Sources */,
 				E06806D723A343B200524F39 /* UIImage+ARDUtilities.m in Sources */,
 				E06806C523A343B200524F39 /* ARDSettingsModel.m in Sources */,

@@ -15,12 +15,12 @@
 
 #import "ARDSettingsModel.h"
 #import "CGImageToCVImageBufferConverter.h"
+#import "VisualEffect.h"
 
 
 const Float64 kFramerateLimit = 30.0;
 
 @interface ARDCaptureController () <AVCaptureVideoDataOutputSampleBufferDelegate>
-@property CIFilter *filter;
 @property CIContext *renderContext;
 @property CGImageToCVImageBufferConverter *bufferConverter;
 @end
@@ -40,7 +40,6 @@ const Float64 kFramerateLimit = 30.0;
     _capturer = capturer;
     _settings = settings;
     _usingFrontCamera = YES;
-    _filter = [CIFilter filterWithName:@"CIColorInvert"];
     _renderContext = [CIContext contextWithEAGLContext:[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2]];
     _bufferConverter = [[CGImageToCVImageBufferConverter alloc] init];
     AVCaptureVideoDataOutput *output = (AVCaptureVideoDataOutput *)capturer.captureSession.outputs.firstObject;
@@ -132,12 +131,10 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (CMSampleBufferRef)applyFilter:(CMSampleBufferRef)sampleBuffer {
   CVImageBufferRef inImgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
-  CIFilter *filter = self.filter;
-  if (!filter) { return sampleBuffer;}
+  VisualEffect *effect = self.visualEffect;
+  if (!effect) { return sampleBuffer;}
   
-  CIImage *inCIImg = [CIImage imageWithCVImageBuffer:inImgBuf];
-  [filter setValue:inCIImg forKey:kCIInputImageKey];
-  CIImage *outCIImg = [filter outputImage];
+  CIImage *outCIImg = [effect processImage:[CIImage imageWithCVImageBuffer:inImgBuf]];
   if (!outCIImg) { return sampleBuffer;}
   
   CGImageRef outCGImg = [self.renderContext createCGImage:outCIImg fromRect:outCIImg.extent];
@@ -165,6 +162,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   if (CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imgBuf, format, &timingInfo, &outBuf) != noErr) {
     return nil;
   }
+  CFAutorelease(outBuf);
   return outBuf;
 }
 
