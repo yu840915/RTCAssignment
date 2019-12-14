@@ -14,6 +14,7 @@
 @property (nonatomic) AVAssetWriter *assetWriter;
 @property (nonatomic) AVAssetWriterInput *videoInput;
 @property (nonatomic, assign) CGSize videoDimension;
+@property (nonatomic) AVAssetWriterInputPixelBufferAdaptor *adaptor;
 @property BOOL isRecording;
 
 @end
@@ -39,8 +40,9 @@
   [self.videoInput markAsFinished];
   __weak VideoRecordingSession *weakSelf = self;
   [self.assetWriter finishWritingWithCompletionHandler:^{
-    VideoRecordingSession *strongSelf = weakSelf;
-    [strongSelf didFinishWriting];
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      [weakSelf didFinishWriting];
+    }];
   }];
 }
 
@@ -59,6 +61,13 @@
 
 - (void)renderFrame:(RTCVideoFrame *)frame {
   if (!self.isRecording) { return; }
+  __weak VideoRecordingSession *weakSelf = self;
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    [weakSelf prepareAndRecordFrame:frame];
+  }];
+}
+
+- (void)prepareAndRecordFrame:(RTCVideoFrame *)frame {
   if (!self.assetWriter) {
     AVAssetWriter *writer = [self prepareAssetWriterWithInitialFrame:frame];
     if (!writer) { return; }
@@ -74,6 +83,7 @@
     return nil;
   }
   AVAssetWriterInput *input = [self prepareVideoInputWithInitialFrame:frame];
+  self.adaptor = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:input sourcePixelBufferAttributes:nil];
   if (![assetWriter canAddInput:input]) {
     return nil;
   }
@@ -105,12 +115,13 @@
 
 - (void)recordFrame:(RTCVideoFrame *)frame {
   if (!self.assetWriter || self.assetWriter.status != AVAssetWriterStatusWriting) {
+    if (self.assetWriter.status == AVAssetWriterStatusFailed) {
+      [self stopRecording];
+    }
     return;
   }
   if (self.startTime == 0) {
-    CMTime ts;
-    ts.timescale = 90000;
-    ts.value = 0;
+    CMTime ts = CMTimeMake(frame.timeStamp, 90000);;
     [self.assetWriter startSessionAtSourceTime:ts];
     self.startTime = frame.timeStamp;
   }
@@ -118,34 +129,13 @@
     [self stopRecording];
     return;
   }
-  CMSampleBufferRef buf = [self convertToCMSampleBufferFromVideoFrame:frame];
-  if (buf && self.videoInput.isReadyForMoreMediaData) {
-    [self.videoInput appendSampleBuffer:buf];
+  if (self.videoInput.isReadyForMoreMediaData) {
+    RTCCVPixelBuffer *rtcBuf = (RTCCVPixelBuffer *)frame.buffer;
+    CVPixelBufferRef imgBuf = rtcBuf.pixelBuffer;
+    CMTime ts = CMTimeMake(frame.timeStamp, 90000);
+    [self.adaptor appendPixelBuffer:imgBuf withPresentationTime:ts];
   }
 }
 
-- (CMSampleBufferRef)convertToCMSampleBufferFromVideoFrame:(RTCVideoFrame *)frame {
-  RTCCVPixelBuffer *rtcBuf = (RTCCVPixelBuffer *)frame.buffer;
-  CVPixelBufferRef imgBuf = rtcBuf.pixelBuffer;
-
-  CMVideoFormatDescriptionRef format;
-  if (CMVideoFormatDescriptionCreateForImageBuffer(kCFAllocatorDefault, imgBuf, &format) != noErr) {
-    return nil;
-  }
-  
-  CMSampleTimingInfo timingInfo;
-  timingInfo.duration = kCMTimeInvalid;
-  timingInfo.decodeTimeStamp = kCMTimeInvalid;
-  CMTime ts;
-  ts.timescale = 90000;
-  ts.value = frame.timeStamp - self.startTime;
-  timingInfo.presentationTimeStamp = ts;
-
-  CMSampleBufferRef outBuf;
-  if (CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imgBuf, format, &timingInfo, &outBuf) != noErr) {
-    return nil;
-  }
-  return outBuf;
-}
 
 @end
