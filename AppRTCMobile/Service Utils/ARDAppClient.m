@@ -27,6 +27,7 @@
 #import <WebRTC/RTCTracing.h>
 #import <WebRTC/RTCVideoSource.h>
 #import <WebRTC/RTCVideoTrack.h>
+@import WebRTC;
 
 #import "ARDAppEngineClient.h"
 #import "ARDExternalSampleCapturer.h"
@@ -39,6 +40,7 @@
 #import "ARDWebSocketChannel.h"
 #import "RTCIceCandidate+JSON.h"
 #import "RTCSessionDescription+JSON.h"
+#import "VisualEffectMessageChannel.h"
 
 static NSString * const kARDIceServerRequestUrl = @"https://appr.tc/params";
 
@@ -101,6 +103,13 @@ static int const kKbpsMultiplier = 1000;
 - (void)timerDidFire:(NSTimer *)timer {
   _timerHandler();
 }
+
+@end
+
+@interface VisualEffectMessageChannel (InternalManaging)
+
+@property (nonatomic) RTCDataChannel *inChannel;
+@property (nonatomic) RTCDataChannel *outChannel;
 
 @end
 
@@ -443,6 +452,7 @@ static int const kKbpsMultiplier = 1000;
 
 - (void)peerConnection:(RTCPeerConnection *)peerConnection
     didOpenDataChannel:(RTCDataChannel *)dataChannel {
+  self.messageChannel.inChannel = dataChannel;
 }
 
 #pragma mark - RTCSessionDescriptionDelegate
@@ -553,10 +563,12 @@ static int const kKbpsMultiplier = 1000;
   config.iceServers = _iceServers;
   config.sdpSemantics = RTCSdpSemanticsUnifiedPlan;
   config.certificate = pcert;
-
+  
+  _messageChannel = [[VisualEffectMessageChannel alloc] init];
   _peerConnection = [_factory peerConnectionWithConfiguration:config
                                                   constraints:constraints
                                                      delegate:self];
+  [self prepareOutgoingMessageChannel:_peerConnection];
   // Create AV senders.
   [self createMediaSenders];
   if (_isInitiator) {
@@ -593,6 +605,12 @@ static int const kKbpsMultiplier = 1000;
     }
   }
 #endif
+}
+
+- (void)prepareOutgoingMessageChannel:(RTCPeerConnection *)peerConnection {
+  RTCDataChannelConfiguration *config = [[RTCDataChannelConfiguration alloc] init];
+  RTCDataChannel *channel = [peerConnection dataChannelForLabel:@"message" configuration:config];
+  _messageChannel.outChannel = channel;
 }
 
 // Processes the messages that we've received from the room server and the

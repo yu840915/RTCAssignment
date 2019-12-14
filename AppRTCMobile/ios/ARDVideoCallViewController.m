@@ -10,6 +10,7 @@
 
 #import "ARDVideoCallViewController.h"
 @import AVFoundation;
+@import Photos;
 
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraVideoCapturer.h>
@@ -23,6 +24,11 @@
 #import "ARDSettingsModel.h"
 #import "ARDVideoCallView.h"
 #import "AVSampleBufferDisplayView.h"
+#import "VideoRecordingSession.h"
+#import "VisualEffectMessageChannel.h"
+#import "VisualEffect.h"
+#import "VideoVisualEffectManager.h"
+#import "RemoteVideoVisualEffectManagerProxy.h"
 
 @interface ARDVideoCallViewController () <ARDAppClientDelegate,
                                           ARDVideoCallViewDelegate,
@@ -30,6 +36,9 @@
 @property(nonatomic, strong) RTCVideoTrack *remoteVideoTrack;
 @property(nonatomic, readonly) ARDVideoCallView *videoCallView;
 @property(nonatomic, assign) AVAudioSessionPortOverride portOverride;
+@property(nonatomic) VideoRecordingSession *recordingSession;
+@property(nonatomic) id<VideoVisualEffectManaging> remoteVisualEffectManager;
+@property(nonatomic) VideoVisualEffectManager *localVisualEffectManager;
 @end
 
 @implementation ARDVideoCallViewController {
@@ -69,8 +78,99 @@
   [session addDelegate:self];
 }
 
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  [_videoCallView.recordButton addTarget:self action:@selector(toggleRecordingIfAllowed:) forControlEvents:UIControlEventTouchUpInside];
+  [_videoCallView.localVisualEffectButton addTarget:self action:@selector(showVisualEffectOptionsForLocalVideo:) forControlEvents:UIControlEventTouchUpInside];
+  [_videoCallView.remoteVisualEffectButton addTarget:self action:@selector(showVisualEffectOptionsForRemoteVideo:) forControlEvents:UIControlEventTouchUpInside];
+}
+
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
   return UIInterfaceOrientationMaskAll;
+}
+
+- (void)setRecordingSession:(VideoRecordingSession *)recordingSession {
+  _recordingSession = recordingSession;
+  __weak ARDVideoCallViewController *weakSelf = self;
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    [weakSelf updateViewsForRecording];
+  }];
+}
+
+- (void)updateViewsForRecording {
+  [self.videoCallView.recordButton setSelected:self.recordingSession];
+}
+
+- (void)updateViewsForVisualEffectStates {
+  NSString *lEffect = self.localVisualEffectManager.appliedEffect.defaultDisplayName ?: @"Effect";
+  [self.videoCallView.localVisualEffectButton setTitle:lEffect forState:UIControlStateNormal];
+
+  NSString *rEffect = self.remoteVisualEffectManager.appliedEffect.defaultDisplayName ?: @"Effect";
+  [self.videoCallView.remoteVisualEffectButton setTitle:rEffect forState:UIControlStateNormal];
+}
+
+#pragma mark - Action
+
+- (void)toggleRecordingIfAllowed:(id)sender {
+  __weak ARDVideoCallViewController *weakSelf = self;
+  [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      [weakSelf toggleRecordingOrShowAlertOnAuthorizationStatus:status];
+    }];
+  }];
+}
+
+- (void)toggleRecordingOrShowAlertOnAuthorizationStatus:(PHAuthorizationStatus) status {
+  switch (status) {
+    case PHAuthorizationStatusNotDetermined:
+      break;
+    case PHAuthorizationStatusAuthorized:
+      [self toggleRecording];
+      break;
+    case PHAuthorizationStatusDenied:
+    case PHAuthorizationStatusRestricted:
+      [self showAlertForPhotoLibraryAccess];
+      break;
+  }
+}
+
+- (void)toggleRecording {
+  if (!_remoteVideoTrack) {return;}
+  if (self.recordingSession) {
+    [self stopRecording];
+  } else {
+    [self startRecording];
+  }
+}
+
+- (void)showAlertForPhotoLibraryAccess {
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Cannot record video" message:@"Please grant access in \"Settings\"" preferredStyle:UIAlertControllerStyleAlert];
+  [alert addAction:[UIAlertAction actionWithTitle:@"Dismiss" style:UIAlertActionStyleCancel handler:nil]];
+  [self presentViewController:alert animated:true completion:nil];
+}
+
+- (void)showVisualEffectOptionsForLocalVideo:(id)sender {
+  [self showVisualEffectOptionsForManager:self.localVisualEffectManager];
+}
+
+- (void)showVisualEffectOptionsForRemoteVideo:(id)sender {
+  if (self.remoteVisualEffectManager) {
+    [self showVisualEffectOptionsForManager:self.remoteVisualEffectManager];
+  }
+}
+
+- (void)showVisualEffectOptionsForManager:(id<VideoVisualEffectManaging>)manager {
+  UIAlertController *sheet = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+  [sheet addAction:[UIAlertAction actionWithTitle:@"Original" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    [manager applyEffectIfAvailable:nil];
+  }]];
+  for (VisualEffectDescriptor *descriptor in manager.effects) {
+      [sheet addAction:[UIAlertAction actionWithTitle:descriptor.defaultDisplayName style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+      [manager applyEffectIfAvailable:descriptor];
+    }]];
+  }
+  [sheet addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+  [self presentViewController:sheet animated:true completion:nil];
 }
 
 #pragma mark - ARDAppClientDelegate
@@ -107,6 +207,14 @@
   ARDSettingsModel *settingsModel = [[ARDSettingsModel alloc] init];
   _captureController =
       [[ARDCaptureController alloc] initWithCapturer:localCapturer settings:settingsModel];
+  VideoVisualEffectManager *manager = [[VideoVisualEffectManager alloc] initWithCaptureController:_captureController channel:client.messageChannel];
+  _localVisualEffectManager = manager;
+  __weak ARDVideoCallViewController *weakSelf = self;
+  manager.updateBlock = ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      [weakSelf updateViewsForVisualEffectStates];
+    }];
+  };
   _captureController.displayDelegate = self;
   [_captureController startCapture];
 }
@@ -128,7 +236,14 @@
 - (void)appClient:(ARDAppClient *)client
     didReceiveRemoteVideoTrack:(RTCVideoTrack *)remoteVideoTrack {
   self.remoteVideoTrack = remoteVideoTrack;
+  RemoteVideoVisualEffectManagerProxy *manager = [[RemoteVideoVisualEffectManagerProxy alloc] initWithChannel:client.messageChannel];
   __weak ARDVideoCallViewController *weakSelf = self;
+  manager.updateBlock = ^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      [weakSelf updateViewsForVisualEffectStates];
+    }];
+  };
+  self.remoteVisualEffectManager = manager;
   dispatch_async(dispatch_get_main_queue(), ^{
     ARDVideoCallViewController *strongSelf = weakSelf;
     strongSelf.videoCallView.statusLabel.hidden = YES;
@@ -199,11 +314,34 @@
   if (_remoteVideoTrack == remoteVideoTrack) {
     return;
   }
+  [self stopRecording];
   [_remoteVideoTrack removeRenderer:_videoCallView.remoteVideoView];
   _remoteVideoTrack = nil;
   [_videoCallView.remoteVideoView renderFrame:nil];
   _remoteVideoTrack = remoteVideoTrack;
   [_remoteVideoTrack addRenderer:_videoCallView.remoteVideoView];
+}
+
+- (void)startRecording {
+  if (self.recordingSession) { return; }
+  VideoRecordingSession *session = [[VideoRecordingSession alloc] init];
+  __weak ARDVideoCallViewController *weakSelf = self;
+  session.completion = ^{
+    [weakSelf handleRecordComplete];
+  };
+  self.recordingSession = session;
+  [_remoteVideoTrack addRenderer:session];
+  [session startRecording];
+}
+
+- (void)handleRecordComplete {
+  self.recordingSession = nil;
+}
+
+- (void)stopRecording {
+  if (!self.recordingSession) { return; }
+  [self.recordingSession stopRecording];
+  [_remoteVideoTrack removeRenderer:self.recordingSession];
 }
 
 - (void)hangup {
@@ -247,10 +385,12 @@
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
+  CFRetain(sampleBuffer);
   __weak ARDVideoCallViewController *weakSelf = self;
   [[NSOperationQueue mainQueue] addOperationWithBlock:^{
     ARDVideoCallViewController *strongSelf = weakSelf;
     [strongSelf.videoCallView.localVideoView enqueueBuffer:sampleBuffer];
+    CFRelease(sampleBuffer);
   }];
 }
 

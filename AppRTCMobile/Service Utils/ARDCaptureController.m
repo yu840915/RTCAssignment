@@ -15,12 +15,12 @@
 
 #import "ARDSettingsModel.h"
 #import "CGImageToCVImageBufferConverter.h"
+#import "VisualEffect.h"
 
 
 const Float64 kFramerateLimit = 30.0;
 
 @interface ARDCaptureController () <AVCaptureVideoDataOutputSampleBufferDelegate>
-@property CIFilter *filter;
 @property CIContext *renderContext;
 @property CGImageToCVImageBufferConverter *bufferConverter;
 @end
@@ -40,7 +40,6 @@ const Float64 kFramerateLimit = 30.0;
     _capturer = capturer;
     _settings = settings;
     _usingFrontCamera = YES;
-    _filter = [CIFilter filterWithName:@"CIColorInvert"];
     _renderContext = [CIContext contextWithEAGLContext:[[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2]];
     _bufferConverter = [[CGImageToCVImageBufferConverter alloc] init];
     AVCaptureVideoDataOutput *output = (AVCaptureVideoDataOutput *)capturer.captureSession.outputs.firstObject;
@@ -131,19 +130,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (CMSampleBufferRef)applyFilter:(CMSampleBufferRef)sampleBuffer {
-  CVImageBufferRef imgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
-  CIFilter *filter = self.filter;
-  if (!filter) { return sampleBuffer;}
-  CIImage *inImg = [CIImage imageWithCVImageBuffer:imgBuf];
-  [filter setValue:inImg
-                 forKey:kCIInputImageKey];
-  CIImage *outImg = [filter outputImage];
-  if (!outImg) { return sampleBuffer;}
-  CGImageRef outCGImg = [self.renderContext createCGImage:outImg fromRect:outImg.extent];
+  CVImageBufferRef inImgBuf = CMSampleBufferGetImageBuffer(sampleBuffer);
+  VisualEffect *effect = self.visualEffect;
+  if (!effect) { return sampleBuffer;}
+  
+  CIImage *outCIImg = [effect processImage:[CIImage imageWithCVImageBuffer:inImgBuf]];
+  if (!outCIImg) { return sampleBuffer;}
+  
+  CGImageRef outCGImg = [self.renderContext createCGImage:outCIImg fromRect:outCIImg.extent];
   if (!outCGImg) { return sampleBuffer;}
+  
   CVImageBufferRef outImgBuf = [self.bufferConverter convertFromCGImage:outCGImg];
   if (!outImgBuf) { return sampleBuffer;}
-  CMSampleBufferRef outBuf = [self createSampleBufferFromImageBuffer:outImgBuf withOriginalBuffer:sampleBuffer];
+  
+  CMSampleBufferRef outBuf = [self createSampleBufferFromImageBuffer:outImgBuf
+                                                  withOriginalBuffer:sampleBuffer];
   return outBuf ?: sampleBuffer;
 }
 
@@ -161,6 +162,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
   if (CMSampleBufferCreateReadyWithImageBuffer(kCFAllocatorDefault, imgBuf, format, &timingInfo, &outBuf) != noErr) {
     return nil;
   }
+  CFAutorelease(outBuf);
   return outBuf;
 }
 
