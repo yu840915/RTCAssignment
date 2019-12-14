@@ -1,5 +1,5 @@
 //
-//  VideoVisualEffectAccessing.h
+//  VideoVisualEffectManaging.h
 //  AppRTCMobile
 //
 //  Created by 立宣于 on 2019/12/14.
@@ -14,10 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 @import Foundation;
 
 @class VisualEffectDescriptor;
-@protocol VideoVisualEffectAccessing <NSObject>
+@protocol VideoVisualEffectManaging <NSObject>
 
 @property (nonatomic, readonly) NSArray<VisualEffectDescriptor *> *effects;
-@property (nonatomic, nullable) VisualEffectDescriptor *appliedEffect;
+@property (nonatomic, readonly, nullable) VisualEffectDescriptor *appliedEffect;
+- (void)applyEffectIfAvailable:(VisualEffectDescriptor *)descriptor;
 
 @end
 

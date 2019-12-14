@@ -6,10 +6,10 @@
 //  Copyright © 2019 Mike. All rights reserved.
 //
 
-#import "P2PMessage.h"
+#import "VisualEffectMessage.h"
 @import WebRTC;
 
-@implementation P2PMessage
+@implementation VisualEffectMessage
 
 - (instancetype)initWithCommand:(NSString *)command {
 

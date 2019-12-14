@@ -1,5 +1,5 @@
 //
-//  LocalVideoVisualEffectManager.h
+//  VideoVisualEffectManager.h
 //  AppRTCMobile
 //
 //  Created by 立宣于 on 2019/12/14.
@@ -7,12 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "VideoVisualEffectAccessing.h"
+#import "VideoVisualEffectManaging.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface LocalVideoVisualEffectManager : NSObject <VideoVisualEffectAccessing>
+@class ARDCaptureController;
+@interface VideoVisualEffectManager : NSObject <VideoVisualEffectManaging>
 
+@property (nonatomic) ARDCaptureController *captureController;
 @property (nonatomic, readonly) NSArray<VisualEffectDescriptor *> *effects;
 @property (nonatomic, nullable) VisualEffectDescriptor *appliedEffect;
 

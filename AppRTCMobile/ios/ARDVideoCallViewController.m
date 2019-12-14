@@ -25,7 +25,7 @@
 #import "ARDVideoCallView.h"
 #import "AVSampleBufferDisplayView.h"
 #import "VideoRecordingSession.h"
-#import "P2PMessageClient.h"
+#import "VisualEffectMessageChannel.h"
 #import "VisualEffect.h"
 
 @interface ARDVideoCallViewController () <ARDAppClientDelegate,
@@ -138,7 +138,7 @@
 }
 
 - (void)showVisualEffectOptionsForLocalVideo:(id)sender {
-  [_client.messageClient sendMessage:[[P2PMessage alloc] initWithCommand:@"test"]];
+  [_client.messageClient sendMessage:[[VisualEffectMessage alloc] initWithCommand:@"test"]];
 }
 
 - (void)showVisualEffectOptionsForRemoteVideo:(id)sender {

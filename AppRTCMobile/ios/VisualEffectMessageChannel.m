@@ -1,22 +1,22 @@
 //
-//  P2PMessageClient.m
+//  VisualEffectMessageChannel.m
 //  AppRTCMobile
 //
 //  Created by 立宣于 on 2019/12/14.
 //  Copyright © 2019 Mike. All rights reserved.
 //
 
-#import "P2PMessageClient.h"
+#import "VisualEffectMessageChannel.h"
 @import WebRTC;
 
-@interface P2PMessageClient () <RTCDataChannelDelegate>
+@interface VisualEffectMessageChannel () <RTCDataChannelDelegate>
 
 @property (nonatomic) RTCDataChannel *inChannel;
 @property (nonatomic) RTCDataChannel *outChannel;
 
 @end
 
-@implementation P2PMessageClient
+@implementation VisualEffectMessageChannel
 
 - (void)setInChannel:(RTCDataChannel *)inChannel {
   _inChannel.delegate = nil;
@@ -24,7 +24,7 @@
   inChannel.delegate = self;
 }
 
-- (void)sendMessage:(P2PMessage *)message {
+- (void)sendMessage:(VisualEffectMessage *)message {
   RTCDataBuffer *buf = [message toDataBuffer];
   if (buf) {
     [self.outChannel sendData:buf];

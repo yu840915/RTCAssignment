@@ -40,7 +40,7 @@
 #import "ARDWebSocketChannel.h"
 #import "RTCIceCandidate+JSON.h"
 #import "RTCSessionDescription+JSON.h"
-#import "P2PMessageClient.h"
+#import "VisualEffectMessageChannel.h"
 
 static NSString * const kARDIceServerRequestUrl = @"https://appr.tc/params";
 
@@ -106,7 +106,7 @@ static int const kKbpsMultiplier = 1000;
 
 @end
 
-@interface P2PMessageClient (InternalManaging)
+@interface VisualEffectMessageChannel (InternalManaging)
 
 @property (nonatomic) RTCDataChannel *inChannel;
 @property (nonatomic) RTCDataChannel *outChannel;
@@ -564,7 +564,7 @@ static int const kKbpsMultiplier = 1000;
   config.sdpSemantics = RTCSdpSemanticsUnifiedPlan;
   config.certificate = pcert;
   
-  _messageClient = [[P2PMessageClient alloc] init];
+  _messageClient = [[VisualEffectMessageChannel alloc] init];
   _peerConnection = [_factory peerConnectionWithConfiguration:config
                                                   constraints:constraints
                                                      delegate:self];

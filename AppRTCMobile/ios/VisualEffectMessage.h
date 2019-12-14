@@ -1,5 +1,5 @@
 //
-//  P2PMessage.h
+//  VisualEffectMessage.h
 //  AppRTCMobile
 //
 //  Created by 立宣于 on 2019/12/14.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 @class RTCDataBuffer;
-@interface P2PMessage : NSObject
+@interface VisualEffectMessage : NSObject
 
 - (instancetype)initWithCommand:(NSString *)command;
 - (instancetype)initWithDataBuffer:(RTCDataBuffer *)buffer;
