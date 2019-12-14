@@ -27,6 +27,10 @@ static CGFloat const kLocalVideoViewPadding = 8;
 static CGFloat const kStatusBarHeight = 20;
 
 @interface ARDVideoCallView () <RTCVideoViewDelegate>
+@property (nonatomic, weak) UIStackView *extraButtonContainer;
+
+@property (nonatomic, assign) BOOL shouldAddConstraintsForButtonContainer;
+@property (nonatomic, assign) BOOL shouldAddConstraintsForRemoteEffectButton;
 @end
 
 @implementation ARDVideoCallView {
@@ -35,6 +39,7 @@ static CGFloat const kStatusBarHeight = 20;
   UIButton *_hangupButton;
   CGSize _remoteVideoSize;
 }
+
 
 @synthesize statusLabel = _statusLabel;
 @synthesize localVideoView = _localVideoView;
@@ -107,8 +112,66 @@ static CGFloat const kStatusBarHeight = 20;
                     action:@selector(didTripleTap:)];
     tapRecognizer.numberOfTapsRequired = 3;
     [self addGestureRecognizer:tapRecognizer];
+    [self prepareExtraButtons];
   }
   return self;
+}
+
+- (void)prepareExtraButtons {
+  UIStackView *container = [[UIStackView alloc] initWithFrame:CGRectZero];
+  container.spacing = kButtonPadding;
+  UIButton *effectBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+  [effectBtn setTitle:@"Effects" forState:UIControlStateNormal];
+  [container addArrangedSubview:effectBtn];
+  UIButton *recordBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+  recordBtn.titleLabel.numberOfLines = 0;
+  recordBtn.titleLabel.textAlignment = NSTextAlignmentCenter;
+  [recordBtn setTitle:@"Start\nRecord" forState:UIControlStateNormal];
+  [recordBtn setTitle:@"Stop\nRecord" forState:UIControlStateSelected];
+  [recordBtn setTitle:@"Stop\nRecord" forState:UIControlStateSelected | UIControlStateHighlighted];
+  [container addArrangedSubview:recordBtn];
+  [self addSubview:container];
+  
+  _localVisualEffectButton = effectBtn;
+  _recordButton = recordBtn;
+  _extraButtonContainer = container;
+  self.shouldAddConstraintsForButtonContainer = YES;
+  
+  UIButton *rEffectBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+  [rEffectBtn setTitle:@"Effects" forState:UIControlStateNormal];
+  [self addSubview:rEffectBtn];
+  _remoteVisualEffectButton = rEffectBtn;
+  self.shouldAddConstraintsForRemoteEffectButton = YES;
+  
+  [self setNeedsUpdateConstraints];
+}
+
+
+- (void)updateConstraints {
+  if (self.shouldAddConstraintsForButtonContainer) {
+    self.shouldAddConstraintsForButtonContainer = NO;
+    UIView *container = self.extraButtonContainer;
+    container.translatesAutoresizingMaskIntoConstraints = NO;
+    NSNumber *bottom = @(kButtonSize + kButtonPadding);
+    NSNumber *leading = @(kButtonPadding);
+    NSDictionary *views = NSDictionaryOfVariableBindings(container);
+    NSDictionary *metrics = NSDictionaryOfVariableBindings(bottom, leading);
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"|-(leading)-[container]" options:0 metrics:metrics views:views]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[container]-(bottom)-|" options:0 metrics:metrics views:views]];
+  }
+  if (self.shouldAddConstraintsForRemoteEffectButton) {
+    self.shouldAddConstraintsForRemoteEffectButton = NO;
+    UIView *btn = self.remoteVisualEffectButton;
+    btn.translatesAutoresizingMaskIntoConstraints = NO;
+    NSDictionary *views = NSDictionaryOfVariableBindings(btn);
+    NSNumber *bottom = @(kButtonPadding + kLocalVideoViewSize + kLocalVideoViewPadding);
+    CGFloat trailing = -(0.5 * kLocalVideoViewSize + kLocalVideoViewPadding);
+    NSDictionary *metrics = NSDictionaryOfVariableBindings(bottom);
+    
+    [self addConstraints:@[[btn.centerXAnchor constraintEqualToAnchor:self.trailingAnchor constant:trailing]]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[btn]-(bottom)-|" options:0 metrics:metrics views:views]];
+  }
+  [super updateConstraints];
 }
 
 - (void)layoutSubviews {
@@ -174,6 +237,7 @@ static CGFloat const kStatusBarHeight = 20;
   _statusLabel.center =
       CGPointMake(CGRectGetMidX(bounds), CGRectGetMidY(bounds));
   [_localVideoView updateRotation];
+  [super layoutSubviews];
 }
 
 #pragma mark - RTCVideoViewDelegate

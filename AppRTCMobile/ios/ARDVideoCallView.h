@@ -43,4 +43,8 @@
 @property(nonatomic, readonly) ARDStatsView *statsView;
 @property(nonatomic, weak) id<ARDVideoCallViewDelegate> delegate;
 
+@property(nonatomic, readonly, weak) UIButton *recordButton;
+@property(nonatomic, readonly, weak) UIButton *localVisualEffectButton;
+@property(nonatomic, readonly, weak) UIButton *remoteVisualEffectButton;
+
 @end
