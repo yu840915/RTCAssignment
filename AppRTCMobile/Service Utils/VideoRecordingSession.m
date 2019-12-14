@@ -45,7 +45,9 @@
 }
 
 - (void)didFinishWriting {
-  _outputURL = self.assetWriter.outputURL;
+  if (self.assetWriter.status == AVAssetWriterStatusCompleted) {
+    _outputURL = self.assetWriter.outputURL;
+  } 
   [self notifyFinish];
 }
 
