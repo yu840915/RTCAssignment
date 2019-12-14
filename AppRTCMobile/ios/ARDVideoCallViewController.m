@@ -10,6 +10,7 @@
 
 #import "ARDVideoCallViewController.h"
 @import AVFoundation;
+@import Photos;
 
 #import <WebRTC/RTCAudioSession.h>
 #import <WebRTC/RTCCameraVideoCapturer.h>
@@ -73,11 +74,73 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  
+  [_videoCallView.recordButton addTarget:self action:@selector(toggleRecordingIfAllowed:) forControlEvents:UIControlEventTouchUpInside];
+  [_videoCallView.localVisualEffectButton addTarget:self action:@selector(showVisualEffectOptionsForLocalVideo:) forControlEvents:UIControlEventTouchUpInside];
+  [_videoCallView.remoteVisualEffectButton addTarget:self action:@selector(showVisualEffectOptionsForRemoteVideo:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
   return UIInterfaceOrientationMaskAll;
+}
+
+- (void)setRecordingSession:(VideoRecordingSession *)recordingSession {
+  _recordingSession = recordingSession;
+  __weak ARDVideoCallViewController *weakSelf = self;
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    [weakSelf updateViewsForRecording];
+  }];
+}
+
+- (void)updateViewsForRecording {
+  [self.videoCallView.recordButton setSelected:self.recordingSession];
+}
+
+#pragma mark - Action
+
+- (void)toggleRecordingIfAllowed:(id)sender {
+  __weak ARDVideoCallViewController *weakSelf = self;
+  [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      [weakSelf toggleRecordingOrShowAlertOnAuthorizationStatus:status];
+    }];
+  }];
+}
+
+- (void)toggleRecordingOrShowAlertOnAuthorizationStatus:(PHAuthorizationStatus) status {
+  switch (status) {
+    case PHAuthorizationStatusNotDetermined:
+      break;
+    case PHAuthorizationStatusAuthorized:
+      [self toggleRecording];
+      break;
+    case PHAuthorizationStatusDenied:
+    case PHAuthorizationStatusRestricted:
+      [self showAlertForPhotoLibraryAccess];
+      break;
+  }
+}
+
+- (void)toggleRecording {
+  if (!_remoteVideoTrack) {return;}
+  if (self.recordingSession) {
+    [self stopRecording];
+  } else {
+    [self startRecording];
+  }
+}
+
+- (void)showAlertForPhotoLibraryAccess {
+  UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Cannot record video" message:@"Please grant access in \"Settings\"" preferredStyle:UIAlertControllerStyleAlert];
+  [alert addAction:[UIAlertAction actionWithTitle:@"Dismiss" style:UIAlertActionStyleCancel handler:nil]];
+  [self presentViewController:alert animated:true completion:nil];
+}
+
+- (void)showVisualEffectOptionsForLocalVideo:(id)sender {
+  
+}
+
+- (void)showVisualEffectOptionsForRemoteVideo:(id)sender {
+  
 }
 
 #pragma mark - ARDAppClientDelegate
@@ -219,10 +282,11 @@
   VideoRecordingSession *session = [[VideoRecordingSession alloc] init];
   __weak ARDVideoCallViewController *weakSelf = self;
   session.completion = ^{
-    ARDVideoCallViewController *strongSelf = weakSelf;
-    [strongSelf handleRecordComplete];
+    [weakSelf handleRecordComplete];
   };
+  self.recordingSession = session;
   [_remoteVideoTrack addRenderer:session];
+  [session startRecording];
 }
 
 - (void)handleRecordComplete {
