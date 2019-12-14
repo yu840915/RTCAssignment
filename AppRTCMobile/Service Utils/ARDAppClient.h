@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, ARDAppClientState) {
 @class RTCMediaConstraints;
 @class RTCCameraVideoCapturer;
 @class RTCFileVideoCapturer;
+@class P2PMessageClient;
 
 // The delegate is informed of pertinent events and will be called on the
 // main queue.
@@ -67,6 +68,7 @@ typedef NS_ENUM(NSInteger, ARDAppClientState) {
 @property(nonatomic, readonly) ARDAppClientState state;
 @property(nonatomic, weak) id<ARDAppClientDelegate> delegate;
 @property(nonatomic, assign, getter=isBroadcast) BOOL broadcast;
+@property(nonatomic, readonly) P2PMessageClient *messageClient;
 
 // Convenience constructor since all expected use cases will need a delegate
 // in order to receive remote tracks.

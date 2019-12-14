@@ -66,6 +66,8 @@
 		E06806F923A343B200524F39 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = E06806B523A343B100524F39 /* LICENSE */; };
 		E06806FB23A343B200524F39 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E06806BB23A343B200524F39 /* Main.storyboard */; };
 		E06806FC23A343B200524F39 /* ARDJoinResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = E06806BE23A343B200524F39 /* ARDJoinResponse.m */; };
+		E08BB25923A4D0FD00A2109B /* P2PMessageClient.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB25823A4D0FD00A2109B /* P2PMessageClient.m */; };
+		E08BB25C23A4D61E00A2109B /* P2PMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = E08BB25B23A4D61E00A2109B /* P2PMessage.m */; };
 		E23FCAFB6D307619DEB79BFE /* libPods-AppRTCMobile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D04DB0C9CB51E4F01C64E3FE /* libPods-AppRTCMobile.a */; };
 /* End PBXBuildFile section */
 
@@ -196,6 +198,10 @@
 		E06806BC23A343B200524F39 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Main.storyboard; sourceTree = "<group>"; };
 		E06806BD23A343B200524F39 /* ARDSettingsModel+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ARDSettingsModel+Private.h"; sourceTree = "<group>"; };
 		E06806BE23A343B200524F39 /* ARDJoinResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ARDJoinResponse.m; sourceTree = "<group>"; };
+		E08BB25723A4D0FD00A2109B /* P2PMessageClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = P2PMessageClient.h; sourceTree = "<group>"; };
+		E08BB25823A4D0FD00A2109B /* P2PMessageClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = P2PMessageClient.m; sourceTree = "<group>"; };
+		E08BB25A23A4D61E00A2109B /* P2PMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = P2PMessage.h; sourceTree = "<group>"; };
+		E08BB25B23A4D61E00A2109B /* P2PMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = P2PMessage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -243,11 +249,11 @@
 			children = (
 				E068065C23A343AD00524F39 /* ARDAppClient.h */,
 				E068065723A343AD00524F39 /* ARDAppClient.m */,
+				E068067023A343AF00524F39 /* ARDAppClient+Internal.h */,
 				E049C2A523A3D46000DFC320 /* VideoRecordingSession.h */,
 				E049C2A623A3D46000DFC320 /* VideoRecordingSession.m */,
 				E049C2A823A3EB9B00DFC320 /* MovieFileURLGenerator.h */,
 				E049C2A923A3EB9B00DFC320 /* MovieFileURLGenerator.m */,
-				E068067023A343AF00524F39 /* ARDAppClient+Internal.h */,
 				E068067923A343B000524F39 /* ARDAppEngineClient.h */,
 				E068066223A343AE00524F39 /* ARDAppEngineClient.m */,
 				E068064F23A343AC00524F39 /* ARDBitrateTracker.h */,
@@ -366,6 +372,10 @@
 				E06806A123A343B100524F39 /* ARDMainViewController.m */,
 				E06806A223A343B100524F39 /* ARDVideoCallViewController.h */,
 				E068069C23A343B100524F39 /* ARDVideoCallViewController.m */,
+				E08BB25723A4D0FD00A2109B /* P2PMessageClient.h */,
+				E08BB25823A4D0FD00A2109B /* P2PMessageClient.m */,
+				E08BB25A23A4D61E00A2109B /* P2PMessage.h */,
+				E08BB25B23A4D61E00A2109B /* P2PMessage.m */,
 				E068069923A343B100524F39 /* ARDSettingsViewController.h */,
 				E06806A323A343B100524F39 /* ARDSettingsViewController.m */,
 				E068068423A343B100524F39 /* ARDFileCaptureController.h */,
@@ -632,12 +642,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				E06806EE23A343B200524F39 /* ARDMainViewController.m in Sources */,
+				E08BB25C23A4D61E00A2109B /* P2PMessage.m in Sources */,
 				E06806CE23A343B200524F39 /* ARDCaptureController.m in Sources */,
 				E06806F623A343B200524F39 /* RTCVideoCodecInfo+HumanReadable.m in Sources */,
 				E06806C723A343B200524F39 /* ARDAppEngineClient.m in Sources */,
 				E06806F723A343B200524F39 /* ARDTURNClient.m in Sources */,
 				E0394DBF23A3944800E779E3 /* AVSampleBufferDisplayView.m in Sources */,
 				E06806F523A343B200524F39 /* ARDBroadcastSetupViewController.m in Sources */,
+				E08BB25923A4D0FD00A2109B /* P2PMessageClient.m in Sources */,
 				E06806D023A343B200524F39 /* ARDBitrateTracker.m in Sources */,
 				E06806FC23A343B200524F39 /* ARDJoinResponse.m in Sources */,
 				E06806CF23A343B200524F39 /* RTCSessionDescription+JSON.m in Sources */,
