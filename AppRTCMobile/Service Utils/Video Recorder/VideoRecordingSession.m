@@ -102,7 +102,22 @@
                                                              outputSettings:@{AVVideoCodecKey: AVVideoCodecTypeH264,
                                                                               AVVideoWidthKey: @(frame.width),
                                                                               AVVideoHeightKey: @(frame.height)}];
-  input.transform = CGAffineTransformRotate(CGAffineTransformIdentity, frame.rotation);
+  CGFloat angle = 0;
+  switch (frame.rotation) {
+    case RTCVideoRotation_0:
+      angle = 0;
+      break;
+    case RTCVideoRotation_90:
+      angle = M_PI_2;
+      break;
+    case RTCVideoRotation_180:
+      angle = M_PI;
+      break;
+    case RTCVideoRotation_270:
+      angle = -M_PI_2;
+      break;
+  }
+  input.transform = CGAffineTransformMakeRotation(angle);
   input.expectsMediaDataInRealTime = YES;
   return input;
 }
@@ -131,6 +146,10 @@
   }
   if (self.videoInput.isReadyForMoreMediaData) {
     RTCCVPixelBuffer *rtcBuf = (RTCCVPixelBuffer *)frame.buffer;
+    if (![rtcBuf isKindOfClass:[RTCCVPixelBuffer class]]) {
+      [self stopRecording];
+      return;
+    }
     CVPixelBufferRef imgBuf = rtcBuf.pixelBuffer;
     CMTime ts = CMTimeMake(frame.timeStamp, 90000);
     [self.adaptor appendPixelBuffer:imgBuf withPresentationTime:ts];
