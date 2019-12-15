@@ -29,6 +29,7 @@
 #import "VisualEffect.h"
 #import "VideoVisualEffectManager.h"
 #import "RemoteVideoVisualEffectManagerProxy.h"
+#import "SaveVideoTask.h"
 
 @interface ARDVideoCallViewController () <ARDAppClientDelegate,
                                           ARDVideoCallViewDelegate,
@@ -335,6 +336,10 @@
 }
 
 - (void)handleRecordComplete {
+  NSURL *url = self.recordingSession.outputURL;
+  if (url) {
+    [SaveVideoTaskManager.sharedManager saveVideoAtURL:url];
+  }
   self.recordingSession = nil;
 }
 
@@ -345,6 +350,7 @@
 }
 
 - (void)hangup {
+  [self stopRecording];
   self.remoteVideoTrack = nil;
   [_captureController stopCapture];
   _captureController = nil;
